@@ -1,98 +1,85 @@
 ﻿#include "GameScene.h"
-#include "Audio.h"
-#include "AxisIndicator.h"
-#include "DirectXCommon.h"
-#include "PrimitiveDrawer.h"
 #include "TextureManager.h"
-#include "WinApp.h"
+#include <cassert>
 
-// Windowsアプリでのエントリーポイント(main関数)
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	WinApp* win = nullptr;
-	DirectXCommon* dxCommon = nullptr;
-	// 汎用機能
-	Input* input = nullptr;
-	Audio* audio = nullptr;
-	DebugText* debugText = nullptr;
-	AxisIndicator* axisIndicator = nullptr;
-	PrimitiveDrawer* primitiveDrawer = nullptr;
-	GameScene* gameScene = nullptr;
+GameScene::GameScene() {}
 
-	// ゲームウィンドウの作成
-	win = WinApp::GetInstance();
-	win->CreateGameWindow();
+GameScene::~GameScene() { 
+	delete model_; 
+	delete debugCamera_;
+}
 
-	// DirectX初期化処理
-	dxCommon = DirectXCommon::GetInstance();
-	dxCommon->Initialize(win);
+void GameScene::Initialize() {
 
-#pragma region 汎用機能初期化
-	// 入力の初期化
-	input = Input::GetInstance();
-	input->Initialize();
+	dxCommon_ = DirectXCommon::GetInstance();
+	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
+	debugText_ = DebugText::GetInstance();
+	//ファイル名を指定してテクスチャを読み込む
+	textureHandle_ = TextureManager::Load("mario.jpg");
+	
+	//3Dモデルの生成
+	model_ = Model::Create();
 
-	// オーディオの初期化
-	audio = Audio::GetInstance();
-	audio->Initialize();
+	//ワールドトランスフォームの初期化
+	worldTransform_.Initialize();
+	//ビュープロジェクションの初期化
+	viewProjection_.Initialize();
 
-	// テクスチャマネージャの初期化
-	TextureManager::GetInstance()->Initialize(dxCommon->GetDevice());
-	TextureManager::Load("white1x1.png");
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280,720);
+}
 
-	// スプライト静的初期化
-	Sprite::StaticInitialize(dxCommon->GetDevice(), WinApp::kWindowWidth, WinApp::kWindowHeight);
+void GameScene::Update() {
+	//
+}
 
-	// デバッグテキスト初期化
-	debugText = DebugText::GetInstance();
-	debugText->Initialize();
+void GameScene::Draw() {
 
-	// 3Dモデル静的初期化
-	Model::StaticInitialize();
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	// 軸方向表示初期化
-	axisIndicator = AxisIndicator::GetInstance();
-	axisIndicator->Initialize();
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
 
-	primitiveDrawer = PrimitiveDrawer::GetInstance();
-	primitiveDrawer->Initialize();
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
-	// ゲームシーンの初期化
-	gameScene = new GameScene();
-	gameScene->Initialize();
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
 
-	// メインループ
-	while (true) {
-		// メッセージ処理
-		if (win->ProcessMessage()) {
-			break;
-		}
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+	//3Dモデル描画
+	model_->Draw(worldTransform_,viewProjection_,textureHandle_);
 
-		// 入力関連の毎フレーム処理
-		input->Update();
-		// ゲームシーンの毎フレーム処理
-		gameScene->Update();
-		// 軸表示の更新
-		axisIndicator->Update();
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
 
-		// 描画開始
-		dxCommon->PreDraw();
-		// ゲームシーンの描画
-		gameScene->Draw();
-		// 軸表示の描画
-		axisIndicator->Draw();
-		// プリミティブ描画のリセット
-		primitiveDrawer->Reset();
-		// 描画終了
-		dxCommon->PostDraw();
-	}
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
 
-	// 各種解放
-	SafeDelete(gameScene);
-	audio->Finalize();
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
 
-	// ゲームウィンドウの破棄
-	win->TerminateGameWindow();
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
 
-	return 0;
+#pragma endregion
 }
