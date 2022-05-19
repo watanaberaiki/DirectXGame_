@@ -1,11 +1,13 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include"AxisIndicator.h"
+#include"PrimitiveDrawer.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete model_; 
+	delete model_;
 	delete debugCamera_;
 }
 
@@ -15,23 +17,34 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
-	//ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("mario.jpg");
-	
-	//3Dモデルの生成
-	model_ = Model::Create();
 
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	//ファイル名を指定してテクスチャを読み込む
+	textureHandle_ = TextureManager::Load("mario.jpg");
+
+	//3Dモデルの生成
+	model_ = Model::Create();
+
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280,720);
+		
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+
+	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
+
 }
 
 void GameScene::Update() {
-	//
+	//デバッグカメラの更新
+	debugCamera_->Update();
 }
 
 void GameScene::Draw() {
@@ -61,7 +74,10 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3Dモデル描画
-	model_->Draw(worldTransform_,viewProjection_,textureHandle_);
+	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
+	
+	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
+	PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(10,10,10),Vector3(20,20,20),Vector4(200,0,0,0.5));
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

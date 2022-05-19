@@ -47,10 +47,6 @@ class GameScene {
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
-	//3Dモデル
-	Model* model_ = nullptr;
-
-	uint32_t textureHandle_ = 0;
 
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
@@ -60,6 +56,11 @@ class GameScene {
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
+	//テクスチャハンドル
+	uint32_t textureHandle_ = 0;
+
+	//3Dモデル
+	Model* model_ = nullptr;
 	
 	/// <summary>
 	/// ゲームシーン用
