@@ -40,6 +40,37 @@ void GameScene::Initialize() {
 	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 
+	//X,Y,Z方向のスケーリングを設定
+	worldTransform_.scale_ = {5.0f,2.0f,3.0f};
+
+	//スケーリング行列を宣言
+	Matrix4 matScale;
+
+	//単位行列を宣言
+	Matrix4 Scale = {
+		1.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	//スケーリング行列に単位行列を代入する
+	matScale = Scale;
+
+	//スケーリング倍率を行列に設定する
+	matScale.m[0][0] = worldTransform_.scale_.x;
+	matScale.m[1][1] = worldTransform_.scale_.y;
+	matScale.m[2][2] = worldTransform_.scale_.z;
+
+	//ワールドトランスフォームに単位行列を代入する
+	worldTransform_.matWorld_ = Scale;
+
+	//ワールドトランスフォームにスケーリング行列を代入する
+	worldTransform_.matWorld_ = matScale;
+	
+
+	//行列の転送
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
@@ -76,8 +107,6 @@ void GameScene::Draw() {
 	//3Dモデル描画
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 	
-	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
-	PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(10,10,10),Vector3(20,20,20),Vector4(200,0,0,0.5));
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
