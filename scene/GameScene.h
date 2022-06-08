@@ -45,7 +45,32 @@ class GameScene {
 	/// <summary>
 	/// スケール
 	/// </summary>
-	void Scale(Vector3 scale_);
+	Matrix4 Scale(Vector3 worldTransform_scale_);
+
+	/// <summary>
+	/// X軸周りの回転
+	/// </summary>
+	Matrix4 RotateX(float worldTransform_rotation_x);
+
+	/// <summary>
+	/// Y軸周りの回転
+	/// </summary>
+	Matrix4 RotateY(float worldTransform_rotation_y);
+
+	/// <summary>
+	/// Z軸周りの回転
+	/// </summary>
+	Matrix4 RotateZ(float worldTransform_rotation_z);
+
+	/// <summary>
+	/// 平行移動
+	/// </summary>
+	Matrix4 Translation(Vector3 worldTransform_translation_);
+
+	/// <summary>
+	/// ワールド行列の生成
+	/// </summary>
+	Matrix4 MatWorld( Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans);
 
   private: // メンバ変数
 

@@ -52,118 +52,61 @@ void GameScene::Initialize() {
 	//X,Y,Z軸周りの平行移動を設定
 	worldTransform_.translation_ = {10.0f,10.0f,10.0f,};
 
-
-
-	//スケーリング行列の設定//
-	//ここから↓//
-	
-	//スケーリング行列を宣言してに単位行列を代入する
-	Matrix4 matScale = {
-		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	//スケーリング倍率を行列に設定する
-	matScale.m[0][0] = worldTransform_.scale_.x;
-	matScale.m[1][1] = worldTransform_.scale_.y;
-	matScale.m[2][2] = worldTransform_.scale_.z;
-
-
-	//スケーリング行列を設定//
-	//ここまで↑//
-
-	//回転行列の設定//
-	//ここから↓//
+	////スケーリング行列を宣言してに単位行列を代入する
+	//Matrix4 matScale = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	//                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
 	//合成用回転行列の宣言
 	Matrix4 matRot;
 
-	//Z軸回転行列を宣言して単位行列を代入する
-	Matrix4 matRotZ = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-	// X軸回転行列を宣言して単位行列を代入する
-	Matrix4 matRotX = {
-		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f,0.0f, 0.0f, 1.0f
-	};
-	// Y軸回転行列を宣言して単位行列を代入する
-	Matrix4 matRotY = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+	////Z軸回転行列を宣言して単位行列を代入する
+	//Matrix4 matRotZ = {
+	//	1.0f, 0.0f, 0.0f, 0.0f,
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//    0.0f, 0.0f, 1.0f, 0.0f, 
+	//	0.0f, 0.0f, 0.0f, 1.0f
+	//};
+	//// X軸回転行列を宣言して単位行列を代入する
+	//Matrix4 matRotX = {
+	//	1.0f, 0.0f, 0.0f, 0.0f, 
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//    0.0f, 0.0f, 1.0f, 0.0f, 
+	//	0.0f,0.0f, 0.0f, 1.0f
+	//};
+	//// Y軸回転行列を宣言して単位行列を代入する
+	//Matrix4 matRotY = {
+	//	1.0f, 0.0f, 0.0f, 0.0f,
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//    0.0f, 0.0f, 1.0f, 0.0f,
+	//	0.0f, 0.0f, 0.0f, 1.0f
+	//};	
 
-	//Z軸回転行列に回転角を設定する
-	matRotZ.m[0][0] = cos(worldTransform_.rotation_.z);
-	matRotZ.m[0][1] = sin(worldTransform_.rotation_.z);
-	matRotZ.m[1][0] = -sin(worldTransform_.rotation_.z);
-	matRotZ.m[1][1] = cos(worldTransform_.rotation_.z);
 
-	// X軸回転行列に回転角を設定する
-	matRotX.m[1][1] = cos(worldTransform_.rotation_.x);
-	matRotX.m[1][2] = sin(worldTransform_.rotation_.x);
-	matRotX.m[2][1] = -sin(worldTransform_.rotation_.x);
-	matRotX.m[2][2] = cos(worldTransform_.rotation_.x);
+	////平行移動行列を宣言して単位行列を代入する
+	//Matrix4 matTrans = {
+	//	1.0f, 0.0f, 0.0f, 0.0f, 
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//	0.0f, 0.0f, 1.0f, 0.0f, 
+	//	0.0f, 0.0f, 0.0f, 1.0f
+	//};
+	//
+	////ワールドトランスフォームに単位行列を代入する
+	//worldTransform_.matWorld_ = {
+	//	1.0f, 0.0f, 0.0f, 0.0f, 
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//    0.0f, 0.0f, 1.0f, 0.0f, 
+	//	0.0f, 0.0f, 0.0f, 1.0f
+	//};
 
-	// Y軸回転行列に回転角を設定する
-	matRotY.m[0][0] = cos(worldTransform_.rotation_.y);
-	matRotY.m[0][2] = -sin(worldTransform_.rotation_.y);
-	matRotY.m[2][0] = sin(worldTransform_.rotation_.y);
-	matRotY.m[2][2] = cos(worldTransform_.rotation_.y);
 
 	//各回転角を掛け算して合成用回転行列に代入する
-	matRot = matRotZ *= matRotX *= matRotY;
+	matRot = 
+	RotateZ(worldTransform_.rotation_.z) *= 
+	RotateX(worldTransform_.rotation_.x) *=
+	RotateY(worldTransform_.rotation_.y);
 
-
-	//回転行列を設定//
-	//ここまで↑//
-
-
-	//平行移動行列の設定//
-	//ここから↓//
-	
-
-	//平行移動行列を宣言して単位行列を代入する
-	Matrix4 matTrans = {
-		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	//平行移動を行列に設定する
-	matTrans.m[3][0] = worldTransform_.translation_.x;
-	matTrans.m[3][1] = worldTransform_.translation_.y;
-	matTrans.m[3][2] = worldTransform_.translation_.z;
-
-	//平行移動行列を設定//
-	//ここまで↑//
-
-	//行列の合成//
-	//ここから↓//
-	
-	//ワールドトランスフォームに単位行列を代入する
-	worldTransform_.matWorld_ = {
-		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-	    0.0f, 0.0f, 1.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	//ワールドトランスフォームにスケーリング行列を代入する
-	worldTransform_.matWorld_ *= matScale*= matRot*= matTrans;
-	
-	//行列の合成//
-	//ここまで↑//
+	//ワールド行列を設定する
+	MatWorld(Scale(worldTransform_.scale_), matRot, Translation(worldTransform_.translation_));
 
 	//行列の転送
 	worldTransform_.TransferMatrix();
@@ -174,9 +117,7 @@ void GameScene::Update() {
 	debugCamera_->Update();
 }
 
-void GameScene::Scale() {
 
-}
 
 void GameScene::Draw() {
 
@@ -227,4 +168,111 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+
+Matrix4 GameScene::Scale(Vector3 worldTransform_scale_) {
+
+	//単位行列を代入する
+	Matrix4 matScale = {
+		1.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	//スケーリング倍率を行列に設定する
+	matScale.m[0][0] = worldTransform_scale_.x;
+	matScale.m[1][1] = worldTransform_scale_.y;
+	matScale.m[2][2] = worldTransform_scale_.z;
+
+	return matScale;
+}
+
+
+Matrix4 GameScene::RotateX(float worldTransform_rotation_x) {
+	// X軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotX = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	// X軸回転行列に回転角を設定する
+	matRotX.m[1][1] = cos(worldTransform_rotation_x);
+	matRotX.m[1][2] = sin(worldTransform_rotation_x);
+	matRotX.m[2][1] = -sin(worldTransform_rotation_x);
+	matRotX.m[2][2] = cos(worldTransform_rotation_x);
+
+	return matRotX;
+}
+
+Matrix4 GameScene::RotateY(float worldTransform_rotation_y) {
+	// Y軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotY = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	};	
+
+	// Y軸回転行列に回転角を設定する
+	matRotY.m[0][0] = cos(worldTransform_rotation_y);
+	matRotY.m[0][2] = -sin(worldTransform_rotation_y);
+	matRotY.m[2][0] = sin(worldTransform_rotation_y);
+	matRotY.m[2][2] = cos(worldTransform_rotation_y);
+
+	return matRotY;
+}
+
+Matrix4 GameScene::RotateZ(float worldTransform_rotate_z) {
+	// Z軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotZ = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	// Z軸回転行列に回転角を設定する
+	matRotZ.m[0][0] = cos(worldTransform_rotate_z);
+	matRotZ.m[0][1] = sin(worldTransform_rotate_z);
+	matRotZ.m[1][0] = -sin(worldTransform_rotate_z);
+	matRotZ.m[1][1] = cos(worldTransform_rotate_z);
+
+	return matRotZ;
+}
+
+
+
+Matrix4 GameScene::Translation(Vector3 worldTransform_translation_) {
+	//平行移動行列を宣言して単位行列を代入する
+	Matrix4 matTrans = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	//平行移動を行列に設定する
+	matTrans.m[3][0] = worldTransform_translation_.x;
+	matTrans.m[3][1] = worldTransform_translation_.y;
+	matTrans.m[3][2] = worldTransform_translation_.z;
+
+	return matTrans;
+}
+
+
+Matrix4 GameScene::MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans) {
+	worldTransform_.matWorld_ = {
+		1.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f};
+
+
+	//ワールドトランスフォームにスケーリング行列を代入する
+	worldTransform_.matWorld_ *= matScale *= matRot *= matTrans;
+
+	return worldTransform_.matWorld_;
 }
