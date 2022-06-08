@@ -42,7 +42,13 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// スケール
+	/// </summary>
+	void Scale(Vector3 scale_);
+
   private: // メンバ変数
+
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
@@ -62,6 +68,8 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 	
+	//π
+	float PI;
 
 	/// <summary>
 	/// ゲームシーン用
