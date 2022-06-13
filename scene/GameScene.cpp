@@ -55,12 +55,14 @@ void GameScene::Initialize() {
 	}
 	
 
-	//カメラ視点座標を設定
-	viewProjection_.eye = {0,0,-10};
-	//カメラ注視点を設定
-	viewProjection_.target = {10, 0, 0};
-	//カメラ上方向ベクトルを設定(右上45度指定)
-	viewProjection_.up = {cosf(PI / 4), sinf(PI / 4), 0.0f};
+	//カメラ垂直方向視野角を設定
+	viewProjection_.fovAngleY = Radian(45.0f);
+	//アスペクト比を設定
+	viewProjection_.aspectRatio = 1.0f;
+	//ニアクリップ距離を設定
+	viewProjection_.nearZ = 52.0f;
+	//ファークリップ距離を設定
+	viewProjection_.farZ = 53.0f;
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
@@ -85,78 +87,114 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() 
-//視点移動処理
 {
-	////デバッグカメラの更新
-	//debugCamera_->Update();
-	
-	//視点の移動ベクトル
-	Vector3 move = {0, 0, 0};
 
-	//視点の移動速さ
-	const float kEySpeed = 0.2f;
+	////Fov変更処理
+	////上キーで視野角が広がる
+	//if (input_->PushKey(DIK_UP)) {
+	//	viewProjection_.fovAngleY += 0.01f;
+	//	viewProjection_.fovAngleY = clamp(viewProjection_.fovAngleY,0.01f,PI);
+	//} else if (input_->PushKey(DIK_DOWN)) {
+	//	viewProjection_.fovAngleY -= 0.01f;
+	//	viewProjection_.fovAngleY = clamp(viewProjection_.fovAngleY, 0.01f, PI);
+	//}
 
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W)) {
-		move.z += kEySpeed;
+	////行列の再計算
+	//viewProjection_.UpdateMatrix();
+
+	//デバッグ用表示
+	debugText_->SetPos(50,110);
+	debugText_->Printf("forAngleY(Degree):%f",Angle(viewProjection_.fovAngleY));
+
+
+	//クリップ距離変更処理
+	//上下キーでニアクリップを増減
+	if (input_->PushKey(DIK_UP)) {
+		viewProjection_.nearZ += 0.01;
+	} else if (input_->PushKey(DIK_DOWN)) {
+		viewProjection_.nearZ -= 0.01;
 	}
-	else if (input_->PushKey(DIK_S)) {
-		move.z -= kEySpeed;
-	}
-
-	//視点移動(ベクトルの加算)
-	viewProjection_.eye += move;
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
+	debugText_->SetPos(50, 130);
+	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+
+
+////視点移動処理
+//
+//	////デバッグカメラの更新
+//	//debugCamera_->Update();
+//	
+//	//視点の移動ベクトル
+//	Vector3 move = {0, 0, 0};
+//
+//	//視点の移動速さ
+//	const float kEySpeed = 0.2f;
+//
+//	//押した方向で移動ベクトルを変更
+//	if (input_->PushKey(DIK_W)) {
+//		move.z += kEySpeed;
+//	}
+//	else if (input_->PushKey(DIK_S)) {
+//		move.z -= kEySpeed;
+//	}
+//
+//	//視点移動(ベクトルの加算)
+//	viewProjection_.eye += move;
+//
+//	//行列の再計算
+//	viewProjection_.UpdateMatrix();
+//
+	//デバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("eye:(%f,%f,%f)",viewProjection_.eye.x,viewProjection_.eye.y,viewProjection_.eye.z);
-
-	//注視点移動処理
-	//注視点の零ベクトル
-	Vector3 targetMove = {0, 0, 0};
-
-	//注視点の移動速さ
-	const float kTargetSpeed = 0.2f;
-
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_LEFT)) {
-		targetMove.x -= kTargetSpeed;
-	}else if (input_->PushKey(DIK_RIGHT)) {
-		targetMove.x += kTargetSpeed;
-	}
-
-	//注視点移動(ベクトルの加算)
-	viewProjection_.target += targetMove;
-
-	//行列の再計算
-	viewProjection_.UpdateMatrix();
-
+//
+//	//注視点移動処理
+//	//注視点の零ベクトル
+//	Vector3 targetMove = {0, 0, 0};
+//
+//	//注視点の移動速さ
+//	const float kTargetSpeed = 0.2f;
+//
+//	//押した方向で移動ベクトルを変更
+//	if (input_->PushKey(DIK_LEFT)) {
+//		targetMove.x -= kTargetSpeed;
+//	}else if (input_->PushKey(DIK_RIGHT)) {
+//		targetMove.x += kTargetSpeed;
+//	}
+//
+//	//注視点移動(ベクトルの加算)
+//	viewProjection_.target += targetMove;
+//
+//	//行列の再計算
+//	viewProjection_.UpdateMatrix();
+//
 	//デバッグ用表示
 	debugText_->SetPos(50, 70);
 	debugText_->Printf(
 	  "target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,viewProjection_.target.z);
-
-	//上方向回転処理
-
-	//上方向の回転速さ[ラジアン/frame]
-	const float kUpRotSpeed = 0.05f;
-
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_SPACE)) {
-		viewAngle += kUpRotSpeed;
-		//2πを超えたら0に戻す
-		viewAngle = fmodf(viewAngle, PI * 2.0f);
-	}
-
-	//上方向ベクトルを計算(半径1の円周上の座標)
-	viewProjection_.up = {cosf(viewAngle), sinf(viewAngle), 0.0f};
-
-	//行列の再計算
-	viewProjection_.UpdateMatrix();
-
+//
+//	//上方向回転処理
+//
+//	//上方向の回転速さ[ラジアン/frame]
+//	const float kUpRotSpeed = 0.05f;
+//
+//	//押した方向で移動ベクトルを変更
+//	if (input_->PushKey(DIK_SPACE)) {
+//		viewAngle += kUpRotSpeed;
+//		//2πを超えたら0に戻す
+//		viewAngle = fmodf(viewAngle, PI * 2.0f);
+//	}
+//
+//	//上方向ベクトルを計算(半径1の円周上の座標)
+//	viewProjection_.up = {cosf(viewAngle), sinf(viewAngle), 0.0f};
+//
+//	//行列の再計算
+//	viewProjection_.UpdateMatrix();
+//
 	//デバッグ用表示
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
@@ -294,4 +332,32 @@ Matrix4 GameScene::MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans) 
 
 		return worldTransform.matWorld_;
 	}
+}
+
+//ラジアン変換
+float GameScene::Radian(float angle) {
+	float radian;
+	radian = angle * (PI / 180);
+
+	return radian;
+
+}
+
+//度数変換
+float GameScene::Angle(float radian) {
+	float angle;
+	angle = radian * (180 / PI);
+
+	return angle;
+}
+
+
+//clamp
+float GameScene::clamp(float value, float min, float max) {
+	if (value < min) {
+		return min;
+	} else if (value > max) {
+		return max;
+	}
+	return value;
 }

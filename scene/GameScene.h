@@ -11,6 +11,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
+
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -72,6 +74,21 @@ class GameScene {
 	/// </summary>
 	Matrix4 MatWorld( Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans);
 
+	/// <summary>
+	/// ラジアン変換
+	/// </summary>
+	float Radian(float angle);
+
+	/// <summary>
+	/// 度数変換
+	/// </summary>
+	float Angle(float Radian);
+
+	/// <summary>
+	/// clamp
+	/// </summary>
+	float clamp(float value, float min, float max);
+
   private: // メンバ変数
 
 	DirectXCommon* dxCommon_ = nullptr;
@@ -93,11 +110,12 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 	
-	//π
-	float PI;
 
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
+
+	//π
+	float PI;
 
 	/// <summary>
 	/// ゲームシーン用
