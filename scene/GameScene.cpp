@@ -110,9 +110,9 @@ void GameScene::Update()
 	//クリップ距離変更処理
 	//上下キーでニアクリップを増減
 	if (input_->PushKey(DIK_UP)) {
-		viewProjection_.nearZ += 0.01;
+		viewProjection_.nearZ += 0.1;
 	} else if (input_->PushKey(DIK_DOWN)) {
-		viewProjection_.nearZ -= 0.01;
+		viewProjection_.nearZ -= 0.1;
 	}
 
 	//行列の再計算
