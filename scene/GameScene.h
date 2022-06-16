@@ -18,10 +18,10 @@
 /// </summary>
 class GameScene {
 
-  public: // メンバ関数
-	/// <summary>
-	/// コンストクラタ
-	/// </summary>
+public: // メンバ関数
+  /// <summary>
+  /// コンストクラタ
+  /// </summary>
 	GameScene();
 
 	/// <summary>
@@ -72,7 +72,7 @@ class GameScene {
 	/// <summary>
 	/// ワールド行列の生成
 	/// </summary>
-	Matrix4 MatWorld( Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans);
+	Matrix4 MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans);
 
 	/// <summary>
 	/// ラジアン変換
@@ -89,7 +89,28 @@ class GameScene {
 	/// </summary>
 	float clamp(float value, float min, float max);
 
-  private: // メンバ変数
+	/// <summary>
+	/// WorldTransformUpdate
+	/// </summary>
+	void WorldTransformUpdate(int i);
+
+public:
+	//パーツID
+	enum PartId {
+		kRoot,		//大元
+		kSpine,		//脊椎
+		kChest,		//胸
+		kHead,		//頭
+		kArmL,		//左腕
+		kArmR,		//右腕
+		kHip,		//尻
+		kLegL,		//左足
+		kLegR,		//右足
+
+		kNumPartId
+	};
+
+private: // メンバ変数
 
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -109,13 +130,16 @@ class GameScene {
 
 	//3Dモデル
 	Model* model_ = nullptr;
-	
+
 
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
 
 	//π
 	float PI;
+
+	//合成用回転行列の宣言
+	Matrix4 matRot[100];
 
 	/// <summary>
 	/// ゲームシーン用
