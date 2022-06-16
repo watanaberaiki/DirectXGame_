@@ -1,0 +1,95 @@
+#include "Affin.h"
+Affin::Affin() {
+
+}
+
+Affin::~Affin() {
+
+}
+
+
+Matrix4 Affin::Scale(Vector3 worldTransform_scale_) {
+
+	//単位行列を代入する
+	Matrix4 matScale = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+						0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	//スケーリング倍率を行列に設定する
+	matScale.m[0][0] = worldTransform_scale_.x;
+	matScale.m[1][1] = worldTransform_scale_.y;
+	matScale.m[2][2] = worldTransform_scale_.z;
+
+	return matScale;
+}
+
+Matrix4 Affin::RotateX(float worldTransform_rotation_x) {
+	// X軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotX = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+					   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+	// X軸回転行列に回転角を設定する
+	matRotX.m[1][1] = cos(worldTransform_rotation_x);
+	matRotX.m[1][2] = sin(worldTransform_rotation_x);
+	matRotX.m[2][1] = -sin(worldTransform_rotation_x);
+	matRotX.m[2][2] = cos(worldTransform_rotation_x);
+
+	return matRotX;
+}
+
+Matrix4 Affin::RotateY(float worldTransform_rotation_y) {
+	// Y軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotY = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+					   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	// Y軸回転行列に回転角を設定する
+	matRotY.m[0][0] = cos(worldTransform_rotation_y);
+	matRotY.m[0][2] = -sin(worldTransform_rotation_y);
+	matRotY.m[2][0] = sin(worldTransform_rotation_y);
+	matRotY.m[2][2] = cos(worldTransform_rotation_y);
+
+	return matRotY;
+}
+
+Matrix4 Affin::RotateZ(float worldTransform_rotate_z) {
+	// Z軸回転行列を宣言して単位行列を代入する
+	Matrix4 matRotZ = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+					   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	// Z軸回転行列に回転角を設定する
+	matRotZ.m[0][0] = cos(worldTransform_rotate_z);
+	matRotZ.m[0][1] = sin(worldTransform_rotate_z);
+	matRotZ.m[1][0] = -sin(worldTransform_rotate_z);
+	matRotZ.m[1][1] = cos(worldTransform_rotate_z);
+
+	return matRotZ;
+}
+
+Matrix4 Affin::Rotate(Matrix4 RotateX, Matrix4 RotateY, Matrix4 RotateZ) {
+	Matrix4 matRot = RotateX *= RotateY *= RotateZ;
+	
+	return matRot;
+}
+
+Matrix4 Affin::Translation(Vector3 worldTransform_translation_) {
+	//平行移動行列を宣言して単位行列を代入する
+	Matrix4 matTrans = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+						0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	//平行移動を行列に設定する
+	matTrans.m[3][0] = worldTransform_translation_.x;
+	matTrans.m[3][1] = worldTransform_translation_.y;
+	matTrans.m[3][2] = worldTransform_translation_.z;
+
+	return matTrans;
+}
+
+Matrix4 Affin::MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans) {
+
+	WorldTransform worldTransform;
+	worldTransform.matWorld_ = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+									0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	//ワールドトランスフォームにスケーリング行列を代入する
+	worldTransform.matWorld_ *= matScale *= matRot *= matTrans;
+
+	return worldTransform.matWorld_;
+}

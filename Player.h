@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "DebugText.h"
 #include "Input.h"
+#include"Affin.h"
 class Player {
 
 	private:
@@ -16,6 +17,8 @@ class Player {
 	Input* input_=nullptr;
 
 	DebugText* debugText_=nullptr;
+
+	Affin* Affin_ ;
 
 	public:
 		///<summary>

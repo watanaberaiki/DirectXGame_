@@ -43,6 +43,8 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
+	
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -64,6 +66,8 @@ class GameScene {
 	//3Dモデル
 	Model* model_ = nullptr;
 	
+	////デバッグカメラ有効
+	//bool isDebugCameraActive_ = false;
 
 	/// <summary>
 	/// ゲームシーン用

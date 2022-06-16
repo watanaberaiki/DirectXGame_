@@ -4,9 +4,11 @@
 #include"AxisIndicator.h"
 #include"PrimitiveDrawer.h"
 
+
+
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { 
+GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	//自キャラの解放
@@ -30,19 +32,28 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	//デバッグカメラの生成
-	debugCamera_ = new DebugCamera(1280,720);
-		
+	debugCamera_ = new DebugCamera(1280, 720);
+
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
-	
+
 }
 
 void GameScene::Update() {
-	//デバッグカメラの更新
-	//debugCamera_->Update();
-
+//	//カメラの更新
+//	if (isDebugCameraActive_) {
+//		/*デバッグカメラの更新*/
+//		debugCamera_->Update();
+//
+//	}
+//
+//#ifdef _DEBUG
+//	if (input_->TriggerKey(DIK_C)) {
+//		isDebugCameraActive_ = true;
+//	}
+//#endif
 	//自キャラの更新
 	player_->Update(viewProjection_);
 }
@@ -73,7 +84,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
+
 	//自キャラの描画
 	player_->Draw(viewProjection_);
 
