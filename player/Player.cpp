@@ -76,7 +76,44 @@ void Player::Update(ViewProjection viewProjection_) {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
+	//ƒLƒƒƒ‰ƒNƒ^[‚Ìù‰ñˆ—
+	Rotate();
+
+	//ƒLƒƒƒ‰ƒNƒ^[‚ÌUŒ‚ˆ—
+	Attack();
+
+	//’e”­ŽË
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 }
 void Player::Draw(ViewProjection viewProjection_){ 
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	
+	//’e•`‰æ
+	if (bullet_) {
+		bullet_->Draw(viewProjection_);
+	}
+}
+
+void Player::Rotate() {
+	if (input_->PushKey(DIK_U)) {
+		worldTransform_.rotation_.y -= 0.01;
+	}
+	else if (input_->PushKey(DIK_I)) {
+		worldTransform_.rotation_.y += 0.01;
+	}
+}
+
+void Player::Attack() {
+	if (input_->PushKey(DIK_SPACE)) {
+		//’e‚ð¶¬‚µA‰Šú‰»
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		//’e‚ð“o˜^‚·‚é
+		bullet_ = newBullet;
+
+	}
 }

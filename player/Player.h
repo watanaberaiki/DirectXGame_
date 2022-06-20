@@ -4,6 +4,7 @@
 #include "DebugText.h"
 #include "Input.h"
 #include"Affin.h"
+#include"PlayerBullet.h"
 class Player {
 
 	private:
@@ -19,6 +20,9 @@ class Player {
 	DebugText* debugText_=nullptr;
 
 	Affin* Affin_ ;
+
+	//íe
+	PlayerBullet* bullet_ = nullptr;
 
 	public:
 		///<summary>
@@ -42,4 +46,11 @@ class Player {
 	  ///èâä˙âª
 	  ///</summary>
 	  void Draw(ViewProjection viewProjection_);
+
+
+	  //âÒì]
+	  void Rotate();
+
+	  //çUåÇ
+	  void Attack();
 };
