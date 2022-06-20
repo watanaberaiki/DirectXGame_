@@ -5,6 +5,8 @@
 #include "Input.h"
 #include"Affin.h"
 #include"PlayerBullet.h"
+#include<memory>
+#include<list>
 class Player {
 
 	private:
@@ -22,7 +24,7 @@ class Player {
 	Affin* Affin_ ;
 
 	//’e
-	PlayerBullet* bullet_ = nullptr;
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 	public:
 		///<summary>
