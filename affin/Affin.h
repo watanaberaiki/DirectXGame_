@@ -56,5 +56,9 @@ public: // メンバ関数
 	/// </summary>
 	Matrix4 MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans);
 
+	/// <summary>
+	/// ベクトルと行列の掛け算
+	/// </summary>
+	Vector3 MatVector(Vector3 vector, WorldTransform worldTransform);
 };
 
