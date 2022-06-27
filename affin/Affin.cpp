@@ -93,3 +93,11 @@ Matrix4 Affin::MatWorld(Matrix4 matScale, Matrix4 matRot, Matrix4 matTrans) {
 
 	return worldTransform.matWorld_;
 }
+
+Vector3 Affin::MatVector(Vector3 vector, WorldTransform worldTransform) {
+	Vector3 vector_;
+	vector_.x = vector.x * worldTransform.matWorld_.m[0][0] + vector.y * worldTransform.matWorld_.m[1][0] + vector.z * worldTransform.matWorld_.m[2][0] + 0 * worldTransform.matWorld_.m[3][0];
+	vector_.y = vector.x * worldTransform.matWorld_.m[0][1] + vector.y * worldTransform.matWorld_.m[1][1] + vector.z * worldTransform.matWorld_.m[2][1] + 0 * worldTransform.matWorld_.m[3][1];
+	vector_.z = vector.x * worldTransform.matWorld_.m[0][2] + vector.y * worldTransform.matWorld_.m[1][2] + vector.z * worldTransform.matWorld_.m[2][2] + 0 * worldTransform.matWorld_.m[3][2];
+	return vector_;
+}

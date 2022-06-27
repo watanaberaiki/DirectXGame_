@@ -1,7 +1,7 @@
 #include "PlayerBullet.h"
 #include <cassert>
 
-void PlayerBullet::Initialize(Model* model, const Vector3 position) {
+void PlayerBullet::Initialize(Model* model, const Vector3 position, const Vector3 velocity) {
 	//NULLポインタチェック
 	assert(model);
 
@@ -12,9 +12,17 @@ void PlayerBullet::Initialize(Model* model, const Vector3 position) {
 	worldTransform_.Initialize();
 	//引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
+
+	//引数で受け取ったメンバ変数に代入
+	velocity_ = velocity;
 }
 
 void PlayerBullet::Update() {
+	//座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ += velocity_;
+
+
+
 	//ワールド行列を設定する
 	worldTransform_.matWorld_ = Affin_->MatWorld(
 		Affin_->Scale(worldTransform_.scale_),
@@ -24,6 +32,11 @@ void PlayerBullet::Update() {
 		Affin_->Translation(worldTransform_.translation_));
 
 	worldTransform_.TransferMatrix();
+	
+	//時間経過でデス
+	if (--deathTimer_ <= 0) {
+		isDead_ = true;
+	}
 
 }
 
