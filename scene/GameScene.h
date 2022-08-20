@@ -10,7 +10,10 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include"Enemy.h"
 #include"Player.h"
+
+//#include"Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -53,6 +56,9 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
+
+	//敵キャラ
+	Enemy* enemy_ = nullptr;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
