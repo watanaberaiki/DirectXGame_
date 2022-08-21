@@ -9,14 +9,38 @@ void Enemy::Initialize() {
 	textureHandle_ = TextureManager::Load("potta-.jpg");
 
 	worldTransform_.Initialize();
-	
-	worldTransform_.translation_ = Vector3(0,3,10);
 
-	speed = Vector3(0, 0, -0.5);
+	worldTransform_.translation_ = Vector3(0, 3, 10);
+
+	Approachspeed = Vector3(0, 0, -0.5);
+
+	Leavespeed = Vector3(0.1,0.1, 0);
+
+}
+
+void Enemy::Approach() {
+	worldTransform_.translation_ += Approachspeed;
+	//既定の位置で変更
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::Leave() {
+	worldTransform_.translation_ += Leavespeed;
 }
 
 void Enemy::Update() {
-	worldTransform_.translation_ += speed;
+	switch (phase_) {
+	case Phase::Approach:
+		Approach();
+		break;
+
+	case Phase::Leave:
+		Leave();
+		break;
+	}
+
 
 
 	//ワールド行列を設定する
@@ -30,6 +54,6 @@ void Enemy::Update() {
 	worldTransform_.TransferMatrix();
 }
 
-void Enemy::Draw( const ViewProjection& viewProjection) {
+void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
