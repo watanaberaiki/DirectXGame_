@@ -4,6 +4,7 @@
 #include "DebugText.h"
 #include "Input.h"
 #include"Affin.h"
+#include"EnemyBullet.h"
 class Enemy
 {
 	enum class Phase {
@@ -22,10 +23,18 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
+	void Fire();
 
+	void PhaseInitialize();
 
 private:
 	
+	//発射間隔
+	static const int kFireInterval = 60;
+
+	//発射タイマー
+	int32_t FireTimer = 0;
+
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
@@ -40,5 +49,8 @@ private:
 	Vector3 Leavespeed;
 
 	Phase phase_= Phase::Approach;
+
+	//弾
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 };
 

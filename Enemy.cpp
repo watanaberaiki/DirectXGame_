@@ -10,12 +10,17 @@ void Enemy::Initialize() {
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = Vector3(0, 3, 10);
+	worldTransform_.translation_ = Vector3(10, 3, 100);
 
 	Approachspeed = Vector3(0, 0, -0.5);
 
 	Leavespeed = Vector3(0.1,0.1, 0);
 
+	////敵の弾発生
+	//Fire();
+
+	//接近フェーズの初期化
+	PhaseInitialize();
 }
 
 void Enemy::Approach() {
@@ -23,6 +28,15 @@ void Enemy::Approach() {
 	//既定の位置で変更
 	if (worldTransform_.translation_.z < 0.0f) {
 		phase_ = Phase::Leave;
+	}
+
+	//発射タイマーをデクリメント
+	FireTimer--;
+	if (FireTimer == 0) {
+		//弾を発射
+		Fire();
+		//発射タイマーを初期化
+		FireTimer = kFireInterval;
 	}
 }
 
@@ -52,8 +66,39 @@ void Enemy::Update() {
 		Affin_->Translation(worldTransform_.translation_));
 
 	worldTransform_.TransferMatrix();
+
+	//弾発射
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
+
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	//弾描画
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
+}
+
+void Enemy::Fire() {
+	//弾の速度
+	const float kBulletSpeed = -1.0f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+
+	//速度ベクトルを目線の動きに合わせて回転させる
+	velocity = Affin_->MatVector(velocity, worldTransform_);
+	//弾を生成し、初期化
+	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	//弾を登録する
+	bullets_.push_back(std::move(newBullet));
+}
+
+void Enemy::PhaseInitialize() {
+	//発射タイマーを初期化
+	FireTimer = kFireInterval;
 }
