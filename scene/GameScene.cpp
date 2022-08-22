@@ -36,31 +36,36 @@ void GameScene::Initialize() {
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
+	//敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
+
 	//自キャラの生成
-	player_ =new Player();
+	player_ = new Player();
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
 	//敵キャラの生成
 	enemy_ = new Enemy();
 	enemy_->Initialize();
-	
+
+
+
 }
 
 void GameScene::Update() {
-//	//カメラの更新
-//	if (isDebugCameraActive_) {
-//		/*デバッグカメラの更新*/
-//		debugCamera_->Update();
-//
-//	}
-//
-//#ifdef _DEBUG
-//	if (input_->TriggerKey(DIK_C)) {
-//		isDebugCameraActive_ = true;
-//	}
-//#endif
-	//自キャラの更新
+	//	//カメラの更新
+	//	if (isDebugCameraActive_) {
+	//		/*デバッグカメラの更新*/
+	//		debugCamera_->Update();
+	//
+	//	}
+	//
+	//#ifdef _DEBUG
+	//	if (input_->TriggerKey(DIK_C)) {
+	//		isDebugCameraActive_ = true;
+	//	}
+	//#endif
+		//自キャラの更新
 	player_->Update(viewProjection_);
 
 	enemy_->Update();

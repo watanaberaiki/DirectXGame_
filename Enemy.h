@@ -5,27 +5,16 @@
 #include "Input.h"
 #include"Affin.h"
 #include"EnemyBullet.h"
+
+class Player;
+
 class Enemy
 {
 	enum class Phase {
 		Approach,	//ê⁄ãﬂÇ∑ÇÈ
 		Leave,		//ó£íEÇ∑ÇÈ
 	};
-public:
 
-	void Initialize();
-
-	void Update();
-
-	void Approach();
-
-	void Leave();
-
-	void Draw(const ViewProjection& viewProjection);
-
-	void Fire();
-
-	void PhaseInitialize();
 
 private:
 	
@@ -52,5 +41,30 @@ private:
 
 	//íe
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+
+	//ÉvÉåÉCÉÑÅ[
+	Player* player_ = nullptr;
+
+public:
+
+	void Initialize();
+
+	void Update();
+
+	void Approach();
+
+	void Leave();
+
+	void Draw(const ViewProjection& viewProjection);
+
+	void Fire();
+
+	void PhaseInitialize();
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetWorldPosition();
+	
+	
 };
 

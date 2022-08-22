@@ -14,7 +14,7 @@ void Enemy::Initialize() {
 
 	Approachspeed = Vector3(0, 0, -0.5);
 
-	Leavespeed = Vector3(0.1,0.1, 0);
+	Leavespeed = Vector3(0.1, 0.1, 0);
 
 	////敵の弾発生
 	//Fire();
@@ -84,12 +84,27 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 }
 
 void Enemy::Fire() {
+
+	assert(player_);
+
 	//弾の速度
 	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
 
-	//速度ベクトルを目線の動きに合わせて回転させる
-	velocity = Affin_->MatVector(velocity, worldTransform_);
+	//自キャラ
+	Vector3 PlayerWorld = player_->GetWorldPosition();
+	//敵キャラ
+	Vector3 EnemyWorld = GetWorldPosition();
+	//差分ベクトル
+	Vector3 vector = PlayerWorld -= EnemyWorld;
+
+	//正規化
+	float len = std::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+	vector /= len;
+
+	//スピードを掛ける
+	vector *= kBulletSpeed;
+	Vector3 velocity(vector);
+
 	//弾を生成し、初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
@@ -101,4 +116,16 @@ void Enemy::Fire() {
 void Enemy::PhaseInitialize() {
 	//発射タイマーを初期化
 	FireTimer = kFireInterval;
+}
+
+Vector3 Enemy::GetWorldPosition() {
+	//ワールドに入れる座標
+	Vector3 worldPos;
+
+	//ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
 }
