@@ -10,7 +10,7 @@ void Enemy::Initialize() {
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = Vector3(10, 3, 100);
+	worldTransform_.translation_ = Vector3(10, 3, 300);
 
 	Approachspeed = Vector3(0, 0, -0.5);
 
