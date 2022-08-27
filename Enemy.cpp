@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "GameScene.h"
 #include <cassert>
 
 void Enemy::Initialize() {
@@ -88,14 +89,14 @@ void Enemy::Fire() {
 	assert(player_);
 
 	//弾の速度
-	const float kBulletSpeed = -1.0f;
+	const float kBulletSpeed = 1.0f;
 
 	//自キャラ
-	Vector3 PlayerWorld = player_->GetWorldPosition();
+	Vector3 playerWorld = player_->GetWorldPosition();
 	//敵キャラ
-	Vector3 EnemyWorld = GetWorldPosition();
+	Vector3 enemyWorld = GetWorldPosition();
 	//差分ベクトル
-	Vector3 vector = PlayerWorld -= EnemyWorld;
+	Vector3 vector = playerWorld -= enemyWorld;
 
 	//正規化
 	float len = std::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);

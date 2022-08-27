@@ -60,4 +60,5 @@ public:
 
 	//ƒ[ƒ‹ƒhÀ•W‚ğæ“¾
 	Vector3 GetWorldPosition();
+
 };

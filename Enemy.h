@@ -17,7 +17,7 @@ class Enemy
 
 
 private:
-	
+
 	//発射間隔
 	static const int kFireInterval = 60;
 
@@ -37,15 +37,17 @@ private:
 
 	Vector3 Leavespeed;
 
-	Phase phase_= Phase::Approach;
+	Phase phase_ = Phase::Approach;
 
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
-	//プレイヤー
-	Player* player_ = nullptr;
+
 
 public:
+
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	void Initialize();
 
@@ -64,7 +66,7 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition();
-	
-	
+
+
 };
 
