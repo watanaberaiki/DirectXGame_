@@ -46,7 +46,8 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
-	
+	//衝突判定
+	void CheckAllCollisions();
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -56,9 +57,13 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
+	float playerRadius = 1.0;
+	float playerBulletRadius = 1.0;
 
 	//敵キャラ
 	Enemy* enemy_ = nullptr;
+	float enemyRadius = 1.0f;
+	float enemyBulletRadius =1.0f;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;

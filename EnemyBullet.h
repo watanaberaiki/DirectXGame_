@@ -22,6 +22,12 @@ public:
 	//弾の消滅
 	bool IsDead()const { return isDead_; }
 
+	//衝突判定
+	void OnCollision();
+
+	//ワールド座標取得
+	Vector3 GetWorldPosition();
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;

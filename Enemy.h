@@ -5,6 +5,7 @@
 #include "Input.h"
 #include"Affin.h"
 #include"EnemyBullet.h"
+#include <list>
 
 class Player;
 
@@ -42,31 +43,44 @@ private:
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
-
+	
 
 public:
 
 	//プレイヤー
 	Player* player_ = nullptr;
 
+	//初期化
 	void Initialize();
 
+	//更新処理
 	void Update();
-
+	
+	//接近フェーズ
 	void Approach();
 
+	//離脱フェーズ
 	void Leave();
 
+	//描画処理
 	void Draw(const ViewProjection& viewProjection);
 
+	//発射
 	void Fire();
 
+	//フェーズ初期化
 	void PhaseInitialize();
 
+	//プレイヤーセッター
 	void SetPlayer(Player* player) { player_ = player; }
 
 	Vector3 GetWorldPosition();
 
+	//衝突判定
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
 
 };
 

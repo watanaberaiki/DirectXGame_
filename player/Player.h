@@ -26,7 +26,7 @@ private:
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
-
+	
 
 public:
 	///<summary>
@@ -61,4 +61,9 @@ public:
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
 
+	//衝突判定
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 };

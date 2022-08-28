@@ -56,7 +56,10 @@ void Enemy::Update() {
 		break;
 	}
 
-
+	//デスフラグの立った球を削除
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+		});
 
 	//ワールド行列を設定する
 	worldTransform_.matWorld_ = Affin_->MatWorld(
@@ -124,9 +127,13 @@ Vector3 Enemy::GetWorldPosition() {
 	Vector3 worldPos;
 
 	//ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
+}
+
+void Enemy::OnCollision() {
+
 }
