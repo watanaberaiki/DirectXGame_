@@ -11,10 +11,11 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
-	////自キャラの解放
-	//delete player_;
-
+	//自キャラの解放
+	delete player_;
 	delete enemy_;
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -26,9 +27,12 @@ void GameScene::Initialize() {
 
 	//3Dモデルの生成
 	model_ = Model::Create();
-
+	//3Dモデルの生成
+	modelSkydome_=Model::CreateFromOBJ("skydome", true);
 	//ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("mario.jpg");
+	playertextureHandle_ = TextureManager::Load("mario.jpg");
+	//テクスチャ読み込み
+	enemytextureHandle_ = TextureManager::Load("potta-.jpg");
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -41,34 +45,45 @@ void GameScene::Initialize() {
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(model_, playertextureHandle_);
 
 	//敵キャラの生成
 	enemy_ = new Enemy();
-	enemy_->Initialize();
+	enemy_->Initialize(model_, enemytextureHandle_);
 
 	//敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
 
+
+	//天球生成
+	skydome_ = new Skydome();
+	//天球初期化
+	skydome_->Initialize(modelSkydome_);
 }
 
 void GameScene::Update() {
-	//	//カメラの更新
-	//	if (isDebugCameraActive_) {
-	//		/*デバッグカメラの更新*/
-	//		debugCamera_->Update();
-	//
-	//	}
-	//
-	//#ifdef _DEBUG
-	//	if (input_->TriggerKey(DIK_C)) {
-	//		isDebugCameraActive_ = true;
-	//	}
-	//#endif
-		//自キャラの更新
-	player_->Update(viewProjection_);
 
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_C) && !isDebugCameraActive_) {
+		isDebugCameraActive_ = true;
+	}
+#endif
+	//カメラの更新
+	if (isDebugCameraActive_) {
+		/*デバッグカメラの更新*/
+		debugCamera_->Update();
+		////ビュープロジェクション行列を再計算
+		viewProjection_.UpdateMatrix();
+	}
+
+
+
+	//自キャラの更新
+	player_->Update(viewProjection_);
+	//敵キャラの更新
 	enemy_->Update();
+	//天球の更新
+	skydome_->Update();
 
 	CheckAllCollisions();
 }
@@ -102,8 +117,10 @@ void GameScene::Draw() {
 
 	//自キャラの描画
 	player_->Draw(viewProjection_);
-
+	//敵キャラの描画
 	enemy_->Draw(viewProjection_);
+	//天球の描画
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -149,9 +166,9 @@ void GameScene::CheckAllCollisions() {
 		float b = posB.y - posA.y;
 		float c = posB.z - posA.z;
 
-		float d = (a*a )+ (b*b) +(c*c);
-		
-		float r = (playerRadius +  enemyBulletRadius)* (playerRadius + enemyBulletRadius);
+		float d = (a * a) + (b * b) + (c * c);
+
+		float r = (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius);
 
 		if (d <= r) {
 			//自キャラの衝突時コールバックを呼び出す
@@ -182,7 +199,7 @@ void GameScene::CheckAllCollisions() {
 
 		float r = (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius);
 
-		if (d <= r){
+		if (d <= r) {
 			//敵キャラの衝突時コールバックを呼び出す
 			enemy_->OnCollision();
 			//自弾の衝突時コールバックを呼び出す
@@ -212,7 +229,7 @@ void GameScene::CheckAllCollisions() {
 
 			float r = (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius);
 
-			if (d <=r) {
+			if (d <= r) {
 				//自キャラの衝突時コールバックを呼び出す
 				bullet->OnCollision();
 				//敵弾の衝突時コールバックを呼び出す

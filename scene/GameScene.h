@@ -12,6 +12,7 @@
 #include "WorldTransform.h"
 #include"Enemy.h"
 #include"Player.h"
+#include"Skydome.h"
 
 //#include"Player.h"
 
@@ -65,6 +66,10 @@ class GameScene {
 	float enemyRadius = 1.0f;
 	float enemyBulletRadius =1.0f;
 
+	//天球
+	Skydome* skydome_ = nullptr;
+	Model* modelSkydome_ = nullptr;
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -72,13 +77,15 @@ class GameScene {
 	DebugCamera* debugCamera_ = nullptr;
 
 	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+	uint32_t playertextureHandle_ = 0;
+	//テクスチャハンドル
+	uint32_t enemytextureHandle_ = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
 	
-	////デバッグカメラ有効
-	//bool isDebugCameraActive_ = false;
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = true;
 
 	/// <summary>
 	/// ゲームシーン用

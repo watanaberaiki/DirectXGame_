@@ -2,12 +2,13 @@
 #include "GameScene.h"
 #include <cassert>
 
-void Enemy::Initialize() {
-	//3Dモデルの生成
-	model_ = Model::Create();
+void Enemy::Initialize(Model* model, uint32_t textureHandle) {
+	// NULLポインタチェック
+	assert(model);
 
-	//テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("potta-.jpg");
+	//3Dモデルの生成
+	model_ = model;
+	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
 

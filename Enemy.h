@@ -51,7 +51,7 @@ public:
 	Player* player_ = nullptr;
 
 	//‰Šú‰»
-	void Initialize();
+	void Initialize(Model* model, uint32_t textureHandle);
 
 	//XVˆ—
 	void Update();
