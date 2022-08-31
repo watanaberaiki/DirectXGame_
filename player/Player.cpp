@@ -143,6 +143,40 @@ void Player::Update(ViewProjection viewProjection) {
 		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 
 	}
+
+	//マウスカーソル
+	{
+		POINT mousePosition;
+		//マウス座標(スクリーン座標)を取得する
+		GetCursorPos(&mousePosition);
+
+		//クライアントエリア座標に変換する
+		HWND hwnd = WinApp::GetInstance()->GetHwnd();
+		ScreenToClient(hwnd, &mousePosition);
+
+		//マウス座標を2Dレティクルに代入
+		sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
+
+		//ビューポート行列
+		Matrix4 Viewport =
+		{ 1280 / 2,0,0,0,
+		0,-720 / 2,0,0,
+		0,0,1,0,
+		1280 / 2, 720 / 2,0,1 };
+
+		// ビュープロジェクションビューポート合成
+		Matrix4 matVPV = viewProjection.matView *= viewProjection.matProjection *= Viewport;
+
+		//合成行列の逆行列を計算する
+		Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
+
+		//スクリーン座標
+		Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
+		Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
+
+
+
+	}
 }
 void Player::Draw(ViewProjection viewProjection_) {
 

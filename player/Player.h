@@ -8,6 +8,9 @@
 #include<memory>
 #include<list>
 #include "TextureManager.h"
+#include<WinApp.h>
+#include"MathUtility.h"
+
 class Player {
 
 private:
