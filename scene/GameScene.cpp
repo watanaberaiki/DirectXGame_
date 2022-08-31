@@ -59,6 +59,14 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	//天球初期化
 	skydome_->Initialize(modelSkydome_);
+	
+	//レールカメラ生成
+	railcamera_ = new RailCamera();
+	//レールカメラ初期化
+	railcamera_->Initialize(Vector3(0,0,-50),Vector3(0,0,0));
+
+	//プレイヤーとカメラ親子
+	player_->SetParent(railcamera_->GetWorldTransform());
 }
 
 void GameScene::Update() {
@@ -72,20 +80,29 @@ void GameScene::Update() {
 	if (isDebugCameraActive_) {
 		/*デバッグカメラの更新*/
 		debugCamera_->Update();
-		////ビュープロジェクション行列を再計算
-		viewProjection_.UpdateMatrix();
 	}
 
 
 
+
 	//自キャラの更新
-	player_->Update(viewProjection_);
+	player_->Update();
 	//敵キャラの更新
 	enemy_->Update();
 	//天球の更新
 	skydome_->Update();
+	//レールカメラの更新
+	railcamera_->Update();
+
+	//行列の再計算
+	viewProjection_.UpdateMatrix();
 
 	CheckAllCollisions();
+
+	debugText_->SetPos(10, 30);
+	debugText_->Printf("%d", isDebugCameraActive_);
+	debugText_->SetPos(10, 50);
+	debugText_->Printf("eye=%f,%f,%f", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 }
 
 void GameScene::Draw() {
@@ -116,12 +133,20 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//自キャラの描画
-	player_->Draw(viewProjection_);
+	player_->Draw(railcamera_->GetViewProjection());
 	//敵キャラの描画
-	enemy_->Draw(viewProjection_);
+	enemy_->Draw(railcamera_->GetViewProjection());
 	//天球の描画
-	skydome_->Draw(viewProjection_);
+	skydome_->Draw(railcamera_->GetViewProjection());
 
+
+	////自キャラの描画
+	//player_->Draw(viewProjection_);
+	////敵キャラの描画
+	//enemy_->Draw(viewProjection_);
+	////天球の描画
+	//skydome_->Draw(viewProjection_);
+	 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

@@ -39,7 +39,7 @@ public:
 	///< summary>
 	///‰Šú‰»
 	///</summary>
-	void Update(ViewProjection viewProjection_);
+	void Update();
 
 	///< summary>
 	///‰Šú‰»
@@ -66,4 +66,6 @@ public:
 
 	//’eƒŠƒXƒg‚ğæ“¾
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
+	void SetParent(WorldTransform* worldTransform);
 };

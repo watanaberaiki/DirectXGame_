@@ -13,6 +13,7 @@
 #include"Enemy.h"
 #include"Player.h"
 #include"Skydome.h"
+#include"RailCamera.h"
 
 //#include"Player.h"
 
@@ -70,6 +71,9 @@ class GameScene {
 	Skydome* skydome_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 
+	//レールカメラ
+	RailCamera* railcamera_ = nullptr;
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -85,7 +89,7 @@ class GameScene {
 	Model* model_ = nullptr;
 	
 	//デバッグカメラ有効
-	bool isDebugCameraActive_ = true;
+	bool isDebugCameraActive_ =false;
 
 	/// <summary>
 	/// ゲームシーン用

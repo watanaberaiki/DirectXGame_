@@ -14,6 +14,7 @@ class Enemy
 	enum class Phase {
 		Approach,	//Ú‹ß‚·‚é
 		Leave,		//—£’E‚·‚é
+		Stop,		//’â~‚·‚é
 	};
 
 
@@ -38,7 +39,7 @@ private:
 
 	Vector3 Leavespeed;
 
-	Phase phase_ = Phase::Approach;
+	Phase phase_ = Phase::Stop;
 
 	//’e
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
@@ -61,6 +62,9 @@ public:
 
 	//—£’EƒtƒF[ƒY
 	void Leave();
+
+	//’â~ƒtƒF[ƒY
+	void Stop();
 
 	//•`‰æˆ—
 	void Draw(const ViewProjection& viewProjection);

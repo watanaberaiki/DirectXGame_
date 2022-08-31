@@ -12,14 +12,12 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = Vector3(10, 3, 100);
+	worldTransform_.translation_ = Vector3(10, 3, 50);
 
 	Approachspeed = Vector3(0, 0, -0.5);
 
 	Leavespeed = Vector3(0.1, 0.1, 0);
 
-	////敵の弾発生
-	//Fire();
 
 	//接近フェーズの初期化
 	PhaseInitialize();
@@ -44,6 +42,17 @@ void Enemy::Approach() {
 
 void Enemy::Leave() {
 	worldTransform_.translation_ += Leavespeed;
+}
+
+void Enemy::Stop() {
+	//発射タイマーをデクリメント
+	FireTimer--;
+	if (FireTimer == 0) {
+		//弾を発射
+		Fire();
+		//発射タイマーを初期化
+		FireTimer = kFireInterval;
+	}
 }
 
 void Enemy::Update() {

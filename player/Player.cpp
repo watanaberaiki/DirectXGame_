@@ -3,73 +3,50 @@
 #include"PrimitiveDrawer.h"
 #include"Affin.h"
 
-void Player::Initialize(Model* model, uint32_t textureHandle){
+void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
 	assert(model);
 
 	model_ = model;
 	textureHandle_ = textureHandle;
-	
+
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
 	worldTransform_.Initialize();
-
+	worldTransform_.translation_ = { 0,0,50 };
 };
 
-void Player::Update(ViewProjection viewProjection_) {
+void Player::Update() {
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr < PlayerBullet>& bullet) {
 		return bullet->IsDead();
 		});
 
-	
+
 	//キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+	Vector3 move = { 0, 0, 0 };
 
 	//キャラクターのスピード
 	const float charaSpeed = 0.2f;
 
 	if (input_->PushKey(DIK_LEFT)) {
-		move = {-charaSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_RIGHT)) {
-		move = {+charaSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_UP)) {
-		move = {0, +charaSpeed, 0};
-	} else if (input_->PushKey(DIK_DOWN)) {
-		move = {0, -charaSpeed, 0};
+		move = { -charaSpeed, 0, 0 };
+	}
+	else if (input_->PushKey(DIK_RIGHT)) {
+		move = { +charaSpeed, 0, 0 };
+	}
+	else if (input_->PushKey(DIK_UP)) {
+		move = { 0, +charaSpeed, 0 };
+	}
+	else if (input_->PushKey(DIK_DOWN)) {
+		move = { 0, -charaSpeed, 0 };
 	}
 
 	worldTransform_.translation_.x += move.x;
 	worldTransform_.translation_.y += move.y;
 	worldTransform_.translation_.z += move.z;
-
-
-	//ワールド行列を設定する
-	worldTransform_.matWorld_ = Affin_->MatWorld(
-		Affin_->Scale(worldTransform_.scale_),
-		Affin_->Rotate(Affin_->RotateX(worldTransform_.rotation_.x), 
-			Affin_->RotateY(worldTransform_.rotation_.y),
-			Affin_->RotateZ(worldTransform_.rotation_.z)),
-		Affin_->Translation(worldTransform_.translation_));
-
-	debugText_->SetPos(50, 150);
-	debugText_->Printf(
-	"(%f,%f,%f)", 
-	worldTransform_.translation_.x, 
-	worldTransform_.translation_.y,
-	worldTransform_.translation_.z);
-
-	debugText_->SetPos(50, 100);
-	debugText_->Printf(
-	  "(%f,%f,%f)", 
-		viewProjection_.eye.x, 
-		viewProjection_.eye.y, 
-		viewProjection_.eye.z);
-
-	worldTransform_.TransferMatrix();
-
 	//キーボード入力による移動処理	
 	//移動限界座標
 
@@ -82,21 +59,39 @@ void Player::Update(ViewProjection viewProjection_) {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
+	
 	//キャラクターの旋回処理
 	Rotate();
+
+	//ワールド行列を設定する
+	worldTransform_.matWorld_ = Affin_->MatWorld(
+		Affin_->Scale(worldTransform_.scale_),
+		Affin_->Rotate(Affin_->RotateX(worldTransform_.rotation_.x),
+			Affin_->RotateY(worldTransform_.rotation_.y),
+			Affin_->RotateZ(worldTransform_.rotation_.z)),
+		Affin_->Translation(worldTransform_.translation_));
+
+
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+
+	worldTransform_.TransferMatrix();
+
+
+
+	
 
 	//キャラクターの攻撃処理
 	Attack();
 
 	//弾発射
-	for (std::unique_ptr<PlayerBullet>& bullet: bullets_) {
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
 
 }
-void Player::Draw(ViewProjection viewProjection_){ 
+void Player::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	
+
 	//弾描画
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
@@ -117,12 +112,12 @@ void Player::Attack() {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
-		
+
 		//速度ベクトルを目線の動きに合わせて回転させる
 		velocity = Affin_->MatVector(velocity, worldTransform_);
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
@@ -144,4 +139,8 @@ Vector3 Player::GetWorldPosition() {
 
 void Player::OnCollision() {
 
+}
+
+void Player::SetParent(WorldTransform* worldTransform) {
+	worldTransform_.parent_ = worldTransform;
 }
