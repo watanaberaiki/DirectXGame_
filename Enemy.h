@@ -8,6 +8,7 @@
 #include <list>
 
 class Player;
+class GameScene;
 
 class Enemy
 {
@@ -26,6 +27,9 @@ private:
 	//発射タイマー
 	int32_t FireTimer = 0;
 
+	//デスフラグ
+	bool isDead_ = false;
+
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
@@ -39,10 +43,10 @@ private:
 
 	Vector3 Leavespeed;
 
-	Phase phase_ = Phase::Stop;
+	Phase phase_ = Phase::Approach;
 
-	//弾
-	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+	////弾
+	//std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
 	
 
@@ -51,8 +55,11 @@ public:
 	//プレイヤー
 	Player* player_ = nullptr;
 
+	//ゲームシーン
+	GameScene* gamescene_ = nullptr;
+
 	//初期化
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle,Vector3 pos);
 
 	//更新処理
 	void Update();
@@ -83,8 +90,11 @@ public:
 	//衝突判定
 	void OnCollision();
 
-	//弾リストを取得
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+	//ゲームシーンヘッダー
+	void SetGameScene(GameScene* gamescene) { gamescene_ = gamescene; }
+
+	//弾の消滅
+	bool IsDead()const { return isDead_; }
 
 };
 

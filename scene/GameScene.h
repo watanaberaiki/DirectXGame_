@@ -14,8 +14,8 @@
 #include"Player.h"
 #include"Skydome.h"
 #include"RailCamera.h"
+#include<sstream>
 
-//#include"Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -51,6 +51,19 @@ class GameScene {
 	//衝突判定
 	void CheckAllCollisions();
 
+	//敵弾を追加する
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet>&enemybullet);
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemyBullets_; }
+
+	void MakeEnemy(Vector3 pos);
+
+	void LoadEnemyPopData();
+
+	void UpdateEnemyPopCommands();
+
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -63,9 +76,13 @@ class GameScene {
 	float playerBulletRadius = 1.0;
 
 	//敵キャラ
-	Enemy* enemy_ = nullptr;
+	/*Enemy* enemy_ = nullptr;*/
+	std::list<std::unique_ptr<Enemy>> enemys_;
 	float enemyRadius = 1.0f;
 	float enemyBulletRadius =1.0f;
+
+	//敵弾
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 
 	//天球
 	Skydome* skydome_ = nullptr;
@@ -90,6 +107,13 @@ class GameScene {
 	
 	//デバッグカメラ有効
 	bool isDebugCameraActive_ =false;
+
+	//敵発生コマンド
+	std::stringstream enemyPopCommands;
+
+	bool isWait_ = false;
+
+	int waitTimer = 100;
 
 	/// <summary>
 	/// ゲームシーン用

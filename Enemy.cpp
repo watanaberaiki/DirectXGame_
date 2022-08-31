@@ -2,7 +2,7 @@
 #include "GameScene.h"
 #include <cassert>
 
-void Enemy::Initialize(Model* model, uint32_t textureHandle) {
+void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 pos) {
 	// NULLポインタチェック
 	assert(model);
 
@@ -12,7 +12,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 
-	worldTransform_.translation_ = Vector3(10, 3, 50);
+	worldTransform_.translation_ = pos;
 
 	Approachspeed = Vector3(0, 0, -0.5);
 
@@ -64,12 +64,16 @@ void Enemy::Update() {
 	case Phase::Leave:
 		Leave();
 		break;
+
+	case Phase::Stop:
+		Stop();
+		break;
 	}
 
-	//デスフラグの立った球を削除
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
+	////デスフラグの立った球を削除
+	//bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+	//	return bullet->IsDead();
+	//	});
 
 	//ワールド行列を設定する
 	worldTransform_.matWorld_ = Affin_->MatWorld(
@@ -81,25 +85,26 @@ void Enemy::Update() {
 
 	worldTransform_.TransferMatrix();
 
-	//弾発射
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
+	////弾発射
+	//for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+	//	bullet->Update();
+	//}
 
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
-	//弾描画
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
+	////弾描画
+	//for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+	//	bullet->Draw(viewProjection);
+	//}
 }
 
 void Enemy::Fire() {
 
 	assert(player_);
+	assert(gamescene_);
 
 	//弾の速度
 	const float kBulletSpeed = 1.0f;
@@ -123,8 +128,8 @@ void Enemy::Fire() {
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
-	//弾を登録する
-	bullets_.push_back(std::move(newBullet));
+	gamescene_->AddEnemyBullet(newBullet);
+
 }
 
 void Enemy::PhaseInitialize() {
@@ -145,5 +150,5 @@ Vector3 Enemy::GetWorldPosition() {
 }
 
 void Enemy::OnCollision() {
-
+	isDead_ = true;
 }
