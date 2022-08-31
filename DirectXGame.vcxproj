@@ -101,6 +101,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyVector3.cpp" />
     <ClCompile Include="playerbullet\PlayerBullet.cpp" />
     <ClCompile Include="player\Player.cpp" />
     <ClCompile Include="RailCamera.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="MyVector3.h" />
     <ClInclude Include="playerbullet\PlayerBullet.h" />
     <ClInclude Include="player\Player.h" />
     <ClInclude Include="RailCamera.h" />

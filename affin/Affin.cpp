@@ -1,4 +1,5 @@
 #include "Affin.h"
+#include<cmath>  //sprt
 Affin::Affin() {
 
 }
@@ -100,4 +101,31 @@ Vector3 Affin::MatVector(Vector3 vector, WorldTransform worldTransform) {
 	vector_.y = vector.x * worldTransform.matWorld_.m[0][1] + vector.y * worldTransform.matWorld_.m[1][1] + vector.z * worldTransform.matWorld_.m[2][1] + 0 * worldTransform.matWorld_.m[3][1];
 	vector_.z = vector.x * worldTransform.matWorld_.m[0][2] + vector.y * worldTransform.matWorld_.m[1][2] + vector.z * worldTransform.matWorld_.m[2][2] + 0 * worldTransform.matWorld_.m[3][2];
 	return vector_;
+}
+
+Vector3 Affin::GetWorldPosition(WorldTransform worldTransform) {
+	//ワールドに入れる座標
+	Vector3 worldPos;
+
+	//ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform.matWorld_.m[3][0];
+	worldPos.y = worldTransform.matWorld_.m[3][1];
+	worldPos.z = worldTransform.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+Vector3 Affin::wdivision(Matrix4 mat, Vector3 vector)
+{
+	Vector4 division;
+	division.x = mat.m[0][0] * vector.x + mat.m[1][0] * vector.y + mat.m[2][0] * vector.z + mat.m[3][0] * 1;
+	division.y = mat.m[0][1] * vector.x + mat.m[1][1] * vector.y + mat.m[2][1] * vector.z + mat.m[3][1] * 1;
+	division.z = mat.m[0][2] * vector.x + mat.m[1][2] * vector.y + mat.m[2][2] * vector.z + mat.m[3][2] * 1;
+	division.w = mat.m[0][3] * vector.x + mat.m[1][3] * vector.y + mat.m[2][3] * vector.z + mat.m[3][3] * 1;
+
+	division.x = division.x / division.w;
+	division.y = division.y / division.w;
+	division.z = division.z / division.w;
+
+		return {division.x,division.y,division.z};
 }

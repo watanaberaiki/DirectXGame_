@@ -7,6 +7,7 @@
 #include"PlayerBullet.h"
 #include<memory>
 #include<list>
+#include "TextureManager.h"
 class Player {
 
 private:
@@ -26,7 +27,11 @@ private:
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
-	
+	//3Dレティクル用トランスフォーム
+	WorldTransform worldTransform3DReticle_;
+
+	//2Dレティクル用スプライト
+	std::unique_ptr<Sprite>sprite2DReticle_;
 
 public:
 	///<summary>
@@ -39,7 +44,7 @@ public:
 	///< summary>
 	///初期化
 	///</summary>
-	void Update();
+	void Update(ViewProjection viewProjection);
 
 	///< summary>
 	///初期化
@@ -68,4 +73,6 @@ public:
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 	void SetParent(WorldTransform* worldTransform);
+
+	void DrawUI();
 };

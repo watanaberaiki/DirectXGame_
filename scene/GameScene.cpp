@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
-
+	TextureManager::Load("reticle.png");
 
 	//自キャラの生成
 	player_ = new Player();
@@ -81,7 +81,7 @@ void GameScene::Update() {
 
 
 	//自キャラの更新
-	player_->Update();
+	player_->Update(railcamera_->GetViewProjection());
 
 	UpdateEnemyPopCommands();
 	//敵キャラの更新
@@ -184,6 +184,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	player_->DrawUI();
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
