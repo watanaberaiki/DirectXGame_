@@ -1,6 +1,7 @@
 #pragma once
 #include "WorldTransform.h"
 #include "math.h"
+#include "Vector4.h"
 
 
 class Affin
@@ -60,5 +61,9 @@ public: // メンバ関数
 	/// ベクトルと行列の掛け算
 	/// </summary>
 	Vector3 MatVector(Vector3 vector, WorldTransform worldTransform);
+
+	Vector3 GetWorldPosition(WorldTransform worldTransform);
+
+	Vector3 WDivision(Matrix4 matrix, Vector3 vector);
 };
 
