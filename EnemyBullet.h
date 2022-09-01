@@ -22,6 +22,14 @@ public:
 	//弾の消滅
 	bool IsDead()const { return isDead_; }
 
+	//衝突判定
+	void OnCollision();
+
+	//ワールド座標取得
+	Vector3 GetWorldPosition();
+
+	void EnemyBulletDead();
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -36,7 +44,7 @@ private:
 	Vector3 velocity_;
 
 	//寿命
-	static const int32_t kLifeTime = 60 * 5;
+	static const int32_t kLifeTime = 60 * 7;
 
 	//デスタイマー
 	int32_t deathTimer_ = kLifeTime;

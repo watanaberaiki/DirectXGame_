@@ -7,6 +7,11 @@
 #include"PlayerBullet.h"
 #include<memory>
 #include<list>
+#include "TextureManager.h"
+#include<WinApp.h>
+#include"MathUtility.h"
+
+
 class Player {
 
 private:
@@ -14,6 +19,7 @@ private:
 	WorldTransform worldTransform_;
 	//モデル
 	Model* model_ = nullptr;
+	Model* bulletModel_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
@@ -26,20 +32,29 @@ private:
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
+	//3Dレティクル用トランスフォーム
+	WorldTransform worldTransform3DReticle_;
 
+	//2Dレティクル用スプライト
+	std::unique_ptr<Sprite>sprite2DReticle_;
+
+	int playerLife_ = 5;
+
+	int isHit_ = false;
 
 public:
+
 	///<summary>
 	///初期化
 	///</summary>
 	///<param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, Model* bulletmodel);
 
 	///< summary>
 	///初期化
 	///</summary>
-	void Update(ViewProjection viewProjection_);
+	void Update(ViewProjection viewProjection);
 
 	///< summary>
 	///初期化
@@ -60,5 +75,17 @@ public:
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	//衝突判定
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
+	void SetParent(WorldTransform* worldTransform);
+
+	void DrawUI();
+
+	int GetPlayerLife();
 
 };
