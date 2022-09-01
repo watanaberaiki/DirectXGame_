@@ -22,10 +22,11 @@
 /// </summary>
 class GameScene {
 	enum class Scene {
-		title,		//タイトル
-		game,		//ゲーム中
-		clear,		//クリア
-		gameover,	//ゲームオーバー
+		title,			//タイトル
+		explanation,	//操作説明
+		game,			//ゲーム中
+		clear,			//クリア
+		gameover,		//ゲームオーバー
 	};
 
   public: // メンバ関数
@@ -71,6 +72,8 @@ class GameScene {
 
 	void TitleUpdate();
 
+	void ExplanationUpdate();
+
 	void GameUpdate();
 
 	void ClearUpdate();
@@ -78,6 +81,8 @@ class GameScene {
 	void GameoverUpdate();
 
 	void TitleDraw();
+
+	void ExplanationDraw();
 
 	void GameDraw();
 
@@ -136,18 +141,23 @@ class GameScene {
 	//テクスチャハンドル
 	uint32_t titletextureHandle_ = 0;
 	//テクスチャハンドル
+	uint32_t explanationtextureHandle_ = 0;
+	//テクスチャハンドル
 	uint32_t gameovertextureHandle_ = 0;
 	//テクスチャハンドル
 	uint32_t cleartextureHandle_ = 0;
 
 
-	//タイトルレティクル用スプライト
+	//タイトル用スプライト
 	std::unique_ptr<Sprite>title_;
 
-	//タイトルレティクル用スプライト
+	//操作説明用スプライト
+	std::unique_ptr<Sprite>explanation_;
+
+	//ゲームオーバー用スプライト
 	std::unique_ptr<Sprite>gameover_;
 
-	//タイトルレティクル用スプライト
+	//クリア用スプライト
 	std::unique_ptr<Sprite>clear_;
 
 	//3Dモデル

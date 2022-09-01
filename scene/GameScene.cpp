@@ -48,11 +48,14 @@ void GameScene::Initialize() {
 	TextureManager::Load("reticle.png");
 
 	titletextureHandle_ = TextureManager::Load("title.png");
+	explanationtextureHandle_ = TextureManager::Load("explanation.png");
 	gameovertextureHandle_ = TextureManager::Load("gameover.png");
 	cleartextureHandle_ = TextureManager::Load("gameclaer.png");
 
 	//スプライト生成
 	title_.reset(Sprite::Create(titletextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
+
+	explanation_.reset(Sprite::Create(explanationtextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
 
 	clear_.reset(Sprite::Create(cleartextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
 
@@ -105,6 +108,10 @@ void GameScene::Update() {
 	switch (scene_) {
 	case Scene::title:
 		TitleUpdate();
+		break;
+
+	case Scene::explanation:
+		ExplanationUpdate();
 		break;
 
 	case Scene::game:
@@ -174,6 +181,10 @@ void GameScene::Draw() {
 	switch (scene_) {
 	case Scene::title:
 		TitleDraw();
+		break;
+
+	case Scene::explanation:
+		ExplanationDraw();
 		break;
 
 	case Scene::game:
@@ -455,9 +466,16 @@ void GameScene::ClearChange() {
 	scene_ = Scene::clear;
 }
 
+
 void GameScene::TitleUpdate() {
-	if (input_->IsTriggerMouse(0)) {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		Initialize();
+		scene_ = Scene::explanation;
+	}
+}
+
+void GameScene::ExplanationUpdate() {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		scene_ = Scene::game;
 	}
 }
@@ -511,21 +529,16 @@ void GameScene::GameUpdate() {
 	viewProjection_.UpdateMatrix();
 
 	CheckAllCollisions();
-
-	debugText_->SetPos(10, 30);
-	debugText_->Printf("%d", isDebugCameraActive_);
-
-
 }
 
 void GameScene::ClearUpdate() {
-	if (input_->IsTriggerMouse(0)) {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		scene_ = Scene::title;
 	}
 }
 
 void GameScene::GameoverUpdate() {
-	if (input_->IsTriggerMouse(0)) {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		scene_ = Scene::title;
 	}
 }
@@ -572,6 +585,57 @@ void GameScene::TitleDraw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	title_->Draw();
+
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
+}
+
+void GameScene::ExplanationDraw() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	explanation_->Draw();
 
 
 	// デバッグテキストの描画

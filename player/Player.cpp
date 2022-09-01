@@ -102,9 +102,6 @@ void Player::Update(ViewProjection viewProjection) {
 
 	worldTransform_.TransferMatrix();
 
-	DebugText::GetInstance()->SetPos(20, 100);
-	DebugText::GetInstance()->Printf(
-		"worldTransform ScreenPos:(%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y);
 
 	//キャラクターの攻撃処理
 	Attack();
@@ -236,7 +233,7 @@ void Player::Update(ViewProjection viewProjection) {
 		//	sprite2DReticle_->SetPosition(spritePosition);
 		//}
 
-		DebugText::GetInstance()->SetPos(20, 200);
+	/*	DebugText::GetInstance()->SetPos(20, 200);
 		DebugText::GetInstance()->Printf(
 			"Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
 		DebugText::GetInstance()->SetPos(20, 220);
@@ -246,7 +243,7 @@ void Player::Update(ViewProjection viewProjection) {
 		DebugText::GetInstance()->SetPos(20, 260);
 		DebugText::GetInstance()->Printf(
 			"MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
-			worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
+			worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
 
 	}
 }
