@@ -15,12 +15,19 @@
 #include"Skydome.h"
 #include"RailCamera.h"
 #include<sstream>
-
+#include <random>
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
 class GameScene {
+	enum class Scene {
+		title,			//タイトル
+		explanation,	//操作説明
+		game,			//ゲーム中
+		clear,			//クリア
+		gameover,		//ゲームオーバー
+	};
 
   public: // メンバ関数
 	/// <summary>
@@ -63,6 +70,29 @@ class GameScene {
 
 	void UpdateEnemyPopCommands();
 
+	void TitleUpdate();
+
+	void ExplanationUpdate();
+
+	void GameUpdate();
+
+	void ClearUpdate();
+
+	void GameoverUpdate();
+
+	void TitleDraw();
+
+	void ExplanationDraw();
+
+	void GameDraw();
+
+	void ClearDraw();
+
+	void GameoverDraw();
+
+	void GameoverChange();
+
+	void ClearChange();
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -72,14 +102,21 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
-	float playerRadius = 1.0;
-	float playerBulletRadius = 1.0;
+	float playerRadius = 1.0f;
+	float playerBulletRadius = 1.0f;
+	int playerLife = 0;
+	Model* modelPlayer_ = nullptr;
 
 	//敵キャラ
 	/*Enemy* enemy_ = nullptr;*/
 	std::list<std::unique_ptr<Enemy>> enemys_;
-	float enemyRadius = 1.0f;
+	float enemyRadius = 8.0f;
 	float enemyBulletRadius =1.0f;
+	Model* modelEnemy_ = nullptr;
+	bool enemyIsDead = false;
+
+	//弾
+	Model* modelPlayerbullet_ = nullptr;
 
 	//敵弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
@@ -101,6 +138,27 @@ class GameScene {
 	uint32_t playertextureHandle_ = 0;
 	//テクスチャハンドル
 	uint32_t enemytextureHandle_ = 0;
+	//テクスチャハンドル
+	uint32_t titletextureHandle_ = 0;
+	//テクスチャハンドル
+	uint32_t explanationtextureHandle_ = 0;
+	//テクスチャハンドル
+	uint32_t gameovertextureHandle_ = 0;
+	//テクスチャハンドル
+	uint32_t cleartextureHandle_ = 0;
+
+
+	//タイトル用スプライト
+	std::unique_ptr<Sprite>title_;
+
+	//操作説明用スプライト
+	std::unique_ptr<Sprite>explanation_;
+
+	//ゲームオーバー用スプライト
+	std::unique_ptr<Sprite>gameover_;
+
+	//クリア用スプライト
+	std::unique_ptr<Sprite>clear_;
 
 	//3Dモデル
 	Model* model_ = nullptr;
@@ -114,6 +172,8 @@ class GameScene {
 	bool isWait_ = false;
 
 	int waitTimer = 100;
+
+	Scene scene_ = Scene::title;
 
 	/// <summary>
 	/// ゲームシーン用

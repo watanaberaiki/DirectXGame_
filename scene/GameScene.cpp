@@ -12,11 +12,12 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
-	//自キャラの解放
 	delete player_;
-	/*delete enemy_;*/
 	delete skydome_;
 	delete modelSkydome_;
+	delete modelEnemy_;
+	delete modelPlayer_;
+	delete modelPlayerbullet_;
 }
 
 void GameScene::Initialize() {
@@ -30,10 +31,13 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	//3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
-	//ファイル名を指定してテクスチャを読み込む
-	playertextureHandle_ = TextureManager::Load("mario.jpg");
-	//テクスチャ読み込み
-	enemytextureHandle_ = TextureManager::Load("potta-.jpg");
+	//3Dモデルの生成
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	//3Dモデルの生成
+	modelEnemy_ = Model::CreateFromOBJ("enemy",true);
+	//3Dモデルの生成
+	modelPlayerbullet_ = Model::CreateFromOBJ("playerBullet", true);
+
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -41,14 +45,50 @@ void GameScene::Initialize() {
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
+	TextureManager::Load("reticle.png");
 
+	titletextureHandle_ = TextureManager::Load("title.png");
+	explanationtextureHandle_ = TextureManager::Load("explanation.png");
+	gameovertextureHandle_ = TextureManager::Load("gameover.png");
+	cleartextureHandle_ = TextureManager::Load("gameclaer.png");
+
+	//スプライト生成
+	title_.reset(Sprite::Create(titletextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
+
+	explanation_.reset(Sprite::Create(explanationtextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
+
+	clear_.reset(Sprite::Create(cleartextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
+
+	gameover_.reset(Sprite::Create(gameovertextureHandle_, Vector2{ 640,360 }, Vector4{ 1,1,1,1 }, Vector2(0.5f, 0.5f)));
 
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
-	player_->Initialize(model_, playertextureHandle_);
+	player_->Initialize(modelPlayer_, modelPlayerbullet_);
+
+	//自キャラのライフ
+	playerLife = player_->GetPlayerLife();
+
+	//敵キャラを消す
+	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+		enemy_->EnemyDead();
+	}
+	//デスフラグが立った敵を削除
+	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
+
+	//敵弾を消す
+	for (std::unique_ptr<EnemyBullet>& bullet_ : enemyBullets_) {
+		bullet_->EnemyBulletDead();
+	}
+	//デスフラグの立った球を削除
+	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
+		});
 
 	LoadEnemyPopData();
+	//敵
+	MakeEnemy(Vector3(0,10,30));
+
+	enemyIsDead = false;
 
 	//天球生成
 	skydome_ = new Skydome();
@@ -65,133 +105,175 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	switch (scene_) {
+	case Scene::title:
+		TitleUpdate();
+		break;
 
-#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_C) && !isDebugCameraActive_) {
-		isDebugCameraActive_ = true;
-	}
-#endif
-	//カメラの更新
-	if (isDebugCameraActive_) {
-		/*デバッグカメラの更新*/
-		debugCamera_->Update();
-	}
+	case Scene::explanation:
+		ExplanationUpdate();
+		break;
 
+	case Scene::game:
+		GameUpdate();
+		break;
 
-
-
-	//自キャラの更新
-	player_->Update();
-
-	UpdateEnemyPopCommands();
-	//敵キャラの更新
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-
-		enemy_->Update();
-	}
-	//デスフラグが立った敵を削除
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
-	//デスフラグの立った球を削除
-	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
-		});
-
-	//敵弾発射
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Update();
-
+	case Scene::clear:
+		ClearUpdate();
+		break;
+	case Scene::gameover:
+		GameoverUpdate();
+		break;
 	}
 
-
-
-	//天球の更新
-	skydome_->Update();
-	//レールカメラの更新
-	railcamera_->Update();
-
-	//行列の再計算
-	viewProjection_.UpdateMatrix();
-
-	CheckAllCollisions();
-
-	debugText_->SetPos(10, 30);
-	debugText_->Printf("%d", isDebugCameraActive_);
+//#ifdef _DEBUG
+//	if (input_->TriggerKey(DIK_C) && !isDebugCameraActive_) {
+//		isDebugCameraActive_ = true;
+//	}
+//#endif
+//	//カメラの更新
+//	if (isDebugCameraActive_) {
+//		/*デバッグカメラの更新*/
+//		debugCamera_->Update();
+//	}
+//
+//
+//
+//
+//	//自キャラの更新
+//	player_->Update(railcamera_->GetViewProjection());
+//
+//	UpdateEnemyPopCommands();
+//	//敵キャラの更新
+//	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+//
+//		enemy_->Update();
+//	}
+//	//デスフラグが立った敵を削除
+//	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
+//	//デスフラグの立った球を削除
+//	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
+//		});
+//
+//	//敵弾発射
+//	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+//		bullet->Update();
+//
+//	}
+//
+//
+//
+//	//天球の更新
+//	skydome_->Update();
+//	//レールカメラの更新
+//	railcamera_->Update();
+//
+//	//行列の再計算
+//	viewProjection_.UpdateMatrix();
+//
+//	CheckAllCollisions();
+//
+//	debugText_->SetPos(10, 30);
+//	debugText_->Printf("%d", isDebugCameraActive_);
 }
 
 void GameScene::Draw() {
+	switch (scene_) {
+	case Scene::title:
+		TitleDraw();
+		break;
 
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	case Scene::explanation:
+		ExplanationDraw();
+		break;
 
-#pragma region 背景スプライト描画
-	// 背景スプライト描画前処理
-	Sprite::PreDraw(commandList);
+	case Scene::game:
+		GameDraw();
+		break;
 
-	/// <summary>
-	/// ここに背景スプライトの描画処理を追加できる
-	/// </summary>
-
-	// スプライト描画後処理
-	Sprite::PostDraw();
-	// 深度バッファクリア
-	dxCommon_->ClearDepthBuffer();
-#pragma endregion
-
-#pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
-
-	//自キャラの描画
-	player_->Draw(railcamera_->GetViewProjection());
-
-	//敵キャラの描画
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-		enemy_->SetGameScene(this);
-		enemy_->Draw(railcamera_->GetViewProjection());
+	case Scene::clear:
+		ClearDraw();
+		break;
+	case Scene::gameover:
+		GameoverDraw();
+		break;
 	}
 
-	////敵キャラの描画
-	//enemy_->Draw(railcamera_->GetViewProjection());
 
-
-
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
-
-	//敵弾描画
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(railcamera_->GetViewProjection());
-	}
-
-	////自キャラの描画
-	//player_->Draw(viewProjection_);
-	////敵キャラの描画
-	//enemy_->Draw(viewProjection_);
-	////天球の描画
-	//skydome_->Draw(viewProjection_);
-
-	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
-#pragma endregion
-
-#pragma region 前景スプライト描画
-	// 前景スプライト描画前処理
-	Sprite::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに前景スプライトの描画処理を追加できる
-	/// </summary>
-
-	// デバッグテキストの描画
-	debugText_->DrawAll(commandList);
-	//
-	// スプライト描画後処理
-	Sprite::PostDraw();
-
-#pragma endregion
+//	// コマンドリストの取得
+//	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+//
+//#pragma region 背景スプライト描画
+//	// 背景スプライト描画前処理
+//	Sprite::PreDraw(commandList);
+//
+//	/// <summary>
+//	/// ここに背景スプライトの描画処理を追加できる
+//	/// </summary>
+//
+//	// スプライト描画後処理
+//	Sprite::PostDraw();
+//	// 深度バッファクリア
+//	dxCommon_->ClearDepthBuffer();
+//#pragma endregion
+//
+//#pragma region 3Dオブジェクト描画
+//	// 3Dオブジェクト描画前処理
+//	Model::PreDraw(commandList);
+//
+//	/// <summary>
+//	/// ここに3Dオブジェクトの描画処理を追加できる
+//	/// </summary>
+//
+//	//自キャラの描画
+//	player_->Draw(railcamera_->GetViewProjection());
+//
+//	//敵キャラの描画
+//	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+//		enemy_->SetGameScene(this);
+//		enemy_->Draw(railcamera_->GetViewProjection());
+//	}
+//
+//	////敵キャラの描画
+//	//enemy_->Draw(railcamera_->GetViewProjection());
+//
+//
+//
+//	//天球の描画
+//	skydome_->Draw(railcamera_->GetViewProjection());
+//
+//	//敵弾描画
+//	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+//		bullet->Draw(railcamera_->GetViewProjection());
+//	}
+//
+//	////自キャラの描画
+//	//player_->Draw(viewProjection_);
+//	////敵キャラの描画
+//	//enemy_->Draw(viewProjection_);
+//	////天球の描画
+//	//skydome_->Draw(viewProjection_);
+//
+//	// 3Dオブジェクト描画後処理
+//	Model::PostDraw();
+//#pragma endregion
+//
+//#pragma region 前景スプライト描画
+//	// 前景スプライト描画前処理
+//	Sprite::PreDraw(commandList);
+//
+//	/// <summary>
+//	/// ここに前景スプライトの描画処理を追加できる
+//	/// </summary>
+//	player_->DrawUI();
+//
+//	// デバッグテキストの描画
+//	debugText_->DrawAll(commandList);
+//	//
+//	// スプライト描画後処理
+//	Sprite::PostDraw();
+//
+//#pragma endregion
 }
 
 void GameScene::CheckAllCollisions() {
@@ -224,9 +306,9 @@ void GameScene::CheckAllCollisions() {
 		if (d <= r) {
 			//自キャラの衝突時コールバックを呼び出す
 			player_->OnCollision();
+			playerLife = player_->GetPlayerLife();
 			//敵弾の衝突時コールバックを呼び出す
 			bullet->OnCollision();
-
 		}
 	}
 
@@ -255,42 +337,42 @@ void GameScene::CheckAllCollisions() {
 			if (d <= r) {
 				//敵キャラの衝突時コールバックを呼び出す
 				enemy->OnCollision();
+				enemyIsDead = enemy->GetEnemyIsDead();
 				//自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
 			}
 		}
-
+	}
 #pragma endregion
 
 #pragma region 自弾と敵弾の当たり判定
 
-		//自弾と敵弾すべての当たり判定
-		for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-			for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets_) {
+		////自弾と敵弾すべての当たり判定
+		//for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		//	for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets_) {
 
-				//自弾の座標
-				posA = bullet.get()->GetWorldPosition();
+		//		//自弾の座標
+		//		posA = bullet.get()->GetWorldPosition();
 
-				//敵弾の座標
-				posB = bullet2.get()->GetWorldPosition();
+		//		//敵弾の座標
+		//		posB = bullet2.get()->GetWorldPosition();
 
-				float a = posB.x - posA.x;
-				float b = posB.y - posA.y;
-				float c = posB.z - posA.z;
+		//		float a = posB.x - posA.x;
+		//		float b = posB.y - posA.y;
+		//		float c = posB.z - posA.z;
 
-				float d = (a * a) + (b * b) + (c * c);
+		//		float d = (a * a) + (b * b) + (c * c);
 
-				float r = (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius);
+		//		float r = (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius);
 
-				if (d <= r) {
-					//自キャラの衝突時コールバックを呼び出す
-					bullet->OnCollision();
-					//敵弾の衝突時コールバックを呼び出す
-					bullet2->OnCollision();
-				}
-			}
-		}
-	}
+		//		if (d <= r) {
+		//			//自キャラの衝突時コールバックを呼び出す
+		//			bullet->OnCollision();
+		//			//敵弾の衝突時コールバックを呼び出す
+		//			bullet2->OnCollision();
+		//		}
+		//	}
+		//}
 #pragma endregion
 }
 
@@ -302,7 +384,7 @@ void GameScene::MakeEnemy(Vector3 pos) {
 	//敵キャラの生成
 	std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
 	//初期化
-	enemy->Initialize(model_, enemytextureHandle_, pos);
+	enemy->Initialize(modelEnemy_, pos);
 	//敵キャラに自キャラのアドレスを渡す
 	enemy->SetPlayer(player_);
 	//ゲームシーンのアドレス
@@ -353,18 +435,11 @@ void GameScene::UpdateEnemyPopCommands() {
 		}
 
 		// POPコマンド
-		if (word.find("POP") == 0) {
-			// x座標
-			getline(line_stream, word, ',');
-			float x = (float)std::atof(word.c_str());
-			// y座標
-			getline(line_stream, word, ',');
-			float y = (float)std::atof(word.c_str());
-			// z座標
-			getline(line_stream, word, ',');
-			float z = (float)std::atof(word.c_str());
-			//敵を発生させる
-			MakeEnemy(Vector3(x, y, z));
+		if (word.find("RAMDOM") == 0) {
+			//敵キャラの行動変更
+			for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+				enemy_->RandomPhase();
+			}
 		}
 
 		// WAITコマンド
@@ -381,4 +456,357 @@ void GameScene::UpdateEnemyPopCommands() {
 			break;
 		}
 	}
+}
+
+void GameScene::GameoverChange() {
+	scene_ = Scene::gameover;
+}
+
+void GameScene::ClearChange() {
+	scene_ = Scene::clear;
+}
+
+
+void GameScene::TitleUpdate() {
+	if (input_->TriggerKey(DIK_RETURN)) {
+		Initialize();
+		scene_ = Scene::explanation;
+	}
+}
+
+void GameScene::ExplanationUpdate() {
+	if (input_->TriggerKey(DIK_RETURN)) {
+		scene_ = Scene::game;
+	}
+}
+
+void GameScene::GameUpdate() {
+	if (playerLife == 0) {
+		GameoverChange();
+	}
+	if (enemyIsDead == true) {
+		ClearChange();
+	}
+
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_C) && !isDebugCameraActive_) {
+		isDebugCameraActive_ = true;
+	}
+#endif
+	//カメラの更新
+	if (isDebugCameraActive_) {
+		/*デバッグカメラの更新*/
+		debugCamera_->Update();
+	}
+
+
+	//自キャラの更新
+	player_->Update(railcamera_->GetViewProjection());
+
+	UpdateEnemyPopCommands();
+	//敵キャラの更新
+	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+		enemy_->Update();
+	}
+	//デスフラグが立った敵を削除
+	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
+	//デスフラグの立った球を削除
+	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
+		});
+
+	//敵弾発射
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Update();
+
+	}
+
+	//天球の更新
+	skydome_->Update();
+	//レールカメラの更新
+	railcamera_->Update();
+
+	//行列の再計算
+	viewProjection_.UpdateMatrix();
+
+	CheckAllCollisions();
+}
+
+void GameScene::ClearUpdate() {
+	if (input_->TriggerKey(DIK_RETURN)) {
+		scene_ = Scene::title;
+	}
+}
+
+void GameScene::GameoverUpdate() {
+	if (input_->TriggerKey(DIK_RETURN)) {
+		scene_ = Scene::title;
+	}
+}
+
+void GameScene::TitleDraw() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	title_->Draw();
+
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
+}
+
+void GameScene::ExplanationDraw() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	explanation_->Draw();
+
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
+}
+
+void GameScene::GameDraw() {
+
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+	//自キャラの描画
+	player_->Draw(railcamera_->GetViewProjection());
+
+	//敵キャラの描画
+	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+		enemy_->SetGameScene(this);
+		enemy_->Draw(railcamera_->GetViewProjection());
+	}
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	//敵弾描画
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Draw(railcamera_->GetViewProjection());
+	}
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	player_->DrawUI();
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+}
+
+void GameScene::ClearDraw() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	clear_->Draw();
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
+}
+
+void GameScene::GameoverDraw() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+
+	//天球の描画
+	skydome_->Draw(railcamera_->GetViewProjection());
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+
+	gameover_->Draw();
+
+	// デバッグテキストの描画
+	debugText_->DrawAll(commandList);
+	//
+	// スプライト描画後処理
+	Sprite::PostDraw();
 }
