@@ -8,7 +8,7 @@ void RailCamera::Initialize(const Vector3 pos, const Vector3 angle) {
 	worldTransform_.rotation_ = angle;
 	worldTransform_.Initialize();
 	//ビュープロジェクション初期化
-	viewProjection_.farZ = 200.0f;
+	viewProjection_.farZ = 300.0f;
 	viewProjection_.Initialize();
 
 	debugText_ = DebugText::GetInstance();
@@ -26,22 +26,22 @@ void RailCamera::Update() {
 
 	const float anglespeed = 0.01f;
 
-	if (input_->PushKey(DIK_Z))
-	{
-		cameraMove += {0, 0, movespeed};
-	}
-	if (input_->PushKey(DIK_X))
-	{
-		cameraMove -= {0, 0, movespeed};
-	}
-	if (input_->PushKey(DIK_A))
-	{
-		cameraAngle += {0, 0, anglespeed};
-	}
-	if (input_->PushKey(DIK_D))
-	{
-		cameraAngle -= {0, 0, anglespeed};
-	}
+	//if (input_->PushKey(DIK_Z))
+	//{
+	//	cameraMove += {0, 0, movespeed};
+	//}
+	//if (input_->PushKey(DIK_X))
+	//{
+	//	cameraMove -= {0, 0, movespeed};
+	//}
+	//if (input_->PushKey(DIK_A))
+	//{
+	//	cameraAngle += {0, 0, anglespeed};
+	//}
+	//if (input_->PushKey(DIK_D))
+	//{
+	//	cameraAngle -= {0, 0, anglespeed};
+	//}
 
 
 	worldTransform_.translation_ += cameraMove;
