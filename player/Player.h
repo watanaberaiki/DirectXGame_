@@ -8,6 +8,10 @@
 #include<memory>
 #include<list>
 #include "TextureManager.h"
+#include<WinApp.h>
+#include"MathUtility.h"
+
+
 class Player {
 
 private:
@@ -15,6 +19,7 @@ private:
 	WorldTransform worldTransform_;
 	//モデル
 	Model* model_ = nullptr;
+	Model* bulletModel_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
@@ -33,13 +38,18 @@ private:
 	//2Dレティクル用スプライト
 	std::unique_ptr<Sprite>sprite2DReticle_;
 
+	int playerLife_ = 5;
+
+	int isHit_ = false;
+
 public:
+
 	///<summary>
 	///初期化
 	///</summary>
 	///<param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, Model* bulletmodel);
 
 	///< summary>
 	///初期化
@@ -75,4 +85,7 @@ public:
 	void SetParent(WorldTransform* worldTransform);
 
 	void DrawUI();
+
+	int GetPlayerLife();
+
 };

@@ -115,7 +115,7 @@ Vector3 Affin::GetWorldPosition(WorldTransform worldTransform) {
 	return worldPos;
 }
 
-Vector3 Affin::wdivision(Matrix4 mat, Vector3 vector)
+Vector3 Affin::WDivision(Matrix4 mat, Vector3 vector)
 {
 	Vector4 division;
 	division.x = mat.m[0][0] * vector.x + mat.m[1][0] * vector.y + mat.m[2][0] * vector.z + mat.m[3][0] * 1;

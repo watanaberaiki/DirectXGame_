@@ -64,6 +64,6 @@ public: // ƒƒ“ƒoŠÖ”
 
 	Vector3 GetWorldPosition(WorldTransform worldTransform);
 
-	Vector3 wdivision(Matrix4 matrix, Vector3 vector);
+	Vector3 WDivision(Matrix4 matrix, Vector3 vector);
 };
 
