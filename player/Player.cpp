@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, Model* bulletmodel) {
 	debugText_ = DebugText::GetInstance();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,0 };
+	worldTransform_.translation_ = { 0,0,50 };
 
 	worldTransform3DReticle_.Initialize();
 
@@ -48,19 +48,31 @@ void Player::Update(ViewProjection viewProjection) {
 	//キャラクターのスピード
 	const float charaSpeed = 0.2f;
 	//キーボード入力による移動処理	
-	if (input_->PushKey(DIK_A)) {
+	isUp = 0;
+
+	if (input_->PushKey(DIK_LEFT)) {
 		move = { -charaSpeed, 0, 0 };
 	}
-	else if (input_->PushKey(DIK_D)) {
+	else if (input_->PushKey(DIK_RIGHT)) {
 		move = { +charaSpeed, 0, 0 };
 	}
-	else if (input_->PushKey(DIK_W)) {
-		move = { 0, +charaSpeed, 0 };
+	else if (input_->PushKey(DIK_UP)) {
+		move = { 0, 0, +charaSpeed };
 	}
-	else if (input_->PushKey(DIK_S)) {
-		move = { 0, -charaSpeed, 0 };
+	else if (input_->PushKey(DIK_DOWN)) {
+		move = { 0, 0, -charaSpeed};
 	}
 
+	if (input_->PushKey(DIK_SPACE)) {
+		isUp = 1;
+	}
+
+	if (isUp == 0) {
+		worldTransform_.translation_.y -= gravity;
+	}
+	else if (isUp == 1) {
+		worldTransform_.translation_.y += gravity;
+	}
 
 	////ゲームパッドの状態を得る変数（XINPUT）
 	//XINPUT_STATE joyState;
@@ -103,8 +115,8 @@ void Player::Update(ViewProjection viewProjection) {
 	worldTransform_.TransferMatrix();
 
 
-	//キャラクターの攻撃処理
-	Attack();
+	////キャラクターの攻撃処理
+	//Attack();
 
 	//弾発射
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {

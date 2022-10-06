@@ -69,6 +69,7 @@ void GameScene::Initialize() {
 	//自キャラのライフ
 	playerLife = player_->GetPlayerLife();
 
+
 	//敵キャラを消す
 	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 		enemy_->EnemyDead();
@@ -76,13 +77,13 @@ void GameScene::Initialize() {
 	//デスフラグが立った敵を削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
 
-	//敵弾を消す
-	for (std::unique_ptr<EnemyBullet>& bullet_ : enemyBullets_) {
-		bullet_->EnemyBulletDead();
-	}
-	//デスフラグの立った球を削除
-	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
-		});
+	////敵弾を消す
+	//for (std::unique_ptr<EnemyBullet>& bullet_ : enemyBullets_) {
+	//	bullet_->EnemyBulletDead();
+	//}
+	////デスフラグの立った球を削除
+	//enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
+	//	});
 
 	LoadEnemyPopData();
 	//敵
@@ -90,10 +91,11 @@ void GameScene::Initialize() {
 
 	enemyIsDead = false;
 
-	//天球生成
-	skydome_ = new Skydome();
-	//天球初期化
-	skydome_->Initialize(modelSkydome_);
+	////天球生成
+	//skydome_ = new Skydome();
+	////天球初期化
+	//skydome_->Initialize(modelSkydome_);
+
 
 	//レールカメラ生成
 	railcamera_ = new RailCamera();
@@ -514,11 +516,11 @@ void GameScene::GameUpdate() {
 	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
 		});
 
-	//敵弾発射
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Update();
+	////敵弾発射
+	//for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+	//	bullet->Update();
 
-	}
+	//}
 
 	//天球の更新
 	skydome_->Update();
@@ -570,8 +572,8 @@ void GameScene::TitleDraw() {
 	/// </summary>
 
 
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
+	////天球の描画
+	//skydome_->Draw(railcamera_->GetViewProjection());
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -621,8 +623,8 @@ void GameScene::ExplanationDraw() {
 	/// </summary>
 
 
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
+	////天球の描画
+	//skydome_->Draw(railcamera_->GetViewProjection());
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -681,8 +683,8 @@ void GameScene::GameDraw() {
 		enemy_->Draw(railcamera_->GetViewProjection());
 	}
 
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
+	////天球の描画
+	//skydome_->Draw(railcamera_->GetViewProjection());
 
 	//敵弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
@@ -737,8 +739,8 @@ void GameScene::ClearDraw() {
 	/// </summary>
 
 
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
+	////天球の描画
+	//skydome_->Draw(railcamera_->GetViewProjection());
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -787,8 +789,8 @@ void GameScene::GameoverDraw() {
 	/// </summary>
 
 
-	//天球の描画
-	skydome_->Draw(railcamera_->GetViewProjection());
+	////天球の描画
+	//skydome_->Draw(railcamera_->GetViewProjection());
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

@@ -42,6 +42,10 @@ private:
 
 	int isHit_ = false;
 
+	const float gravity = 0.2f;
+
+	int isUp = 0;
+
 public:
 
 	///<summary>
