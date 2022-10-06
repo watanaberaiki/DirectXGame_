@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, Model* bulletmodel) {
 	debugText_ = DebugText::GetInstance();
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,0 };
+	worldTransform_.translation_ = { 0,0,50 };
 
 	worldTransform3DReticle_.Initialize();
 
