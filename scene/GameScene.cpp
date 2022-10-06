@@ -468,14 +468,14 @@ void GameScene::ClearChange() {
 
 
 void GameScene::TitleUpdate() {
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		Initialize();
 		scene_ = Scene::explanation;
 	}
 }
 
 void GameScene::ExplanationUpdate() {
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		scene_ = Scene::game;
 	}
 }
@@ -532,13 +532,13 @@ void GameScene::GameUpdate() {
 }
 
 void GameScene::ClearUpdate() {
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		scene_ = Scene::title;
 	}
 }
 
 void GameScene::GameoverUpdate() {
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		scene_ = Scene::title;
 	}
 }
