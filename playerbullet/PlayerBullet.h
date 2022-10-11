@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "DebugText.h"
 #include "Input.h"
-#include"Affin.h"
+#include"affin/Affin.h"
 
 
 class PlayerBullet

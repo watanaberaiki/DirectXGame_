@@ -3,8 +3,8 @@
 #include "Model.h"
 #include "DebugText.h"
 #include "Input.h"
-#include"Affin.h"
-#include"PlayerBullet.h"
+#include "affin/Affin.h"
+#include"playerbullet/PlayerBullet.h"
 #include<memory>
 #include<list>
 #include "TextureManager.h"

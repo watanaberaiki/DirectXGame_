@@ -1,5 +1,5 @@
 #include "EnemyBullet.h"
-#include "PlayerBullet.h"
+#include "playerbullet/PlayerBullet.h"
 #include <cassert>
 
 void EnemyBullet::Initialize(Model* model, const Vector3 position, const Vector3 velocity) {
