@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include <cassert>
-#include"Affin.h"
+#include"affin/Affin.h"
 class Skydome
 {
 

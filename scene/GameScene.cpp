@@ -33,8 +33,8 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	//3Dモデルの生成
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
-	//3Dモデルの生成
-	modelEnemy_ = Model::CreateFromOBJ("enemy",true);
+	////3Dモデルの生成
+	//modelEnemy_ = Model::CreateFromOBJ("enemy",true);
 	//3Dモデルの生成
 	modelPlayerbullet_ = Model::CreateFromOBJ("playerBullet", true);
 
@@ -70,12 +70,12 @@ void GameScene::Initialize() {
 	playerLife = player_->GetPlayerLife();
 
 
-	//敵キャラを消す
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-		enemy_->EnemyDead();
-	}
-	//デスフラグが立った敵を削除
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
+	////敵キャラを消す
+	//for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+	//	enemy_->EnemyDead();
+	//}
+	////デスフラグが立った敵を削除
+	//enemys_.remove_if([](std::unique_ptr<Enemy>& enemy_) { return enemy_->IsDead(); });
 
 	////敵弾を消す
 	//for (std::unique_ptr<EnemyBullet>& bullet_ : enemyBullets_) {
@@ -85,11 +85,12 @@ void GameScene::Initialize() {
 	//enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead();
 	//	});
 
-	LoadEnemyPopData();
-	//敵
-	MakeEnemy(Vector3(0,10,30));
+	//LoadEnemyPopData();
+	////敵
+	//MakeEnemy(Vector3(0,10,30));
 
-	enemyIsDead = false;
+	//enemyIsDead = false;
+
 
 	////天球生成
 	//skydome_ = new Skydome();

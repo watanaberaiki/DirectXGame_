@@ -11,7 +11,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include"Enemy.h"
-#include"Player.h"
+#include"player/Player.h"
 #include"Skydome.h"
 #include"RailCamera.h"
 #include<sstream>

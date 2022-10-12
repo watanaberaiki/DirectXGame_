@@ -4,7 +4,7 @@
 #include"ViewProjection.h"
 #include "Input.h"
 #include "DebugText.h"
-#include"Affin.h"
+#include"affin/Affin.h"
 
 class RailCamera
 {
