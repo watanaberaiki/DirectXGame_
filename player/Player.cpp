@@ -65,13 +65,32 @@ void Player::Update(ViewProjection viewProjection) {
 
 	if (input_->PushKey(DIK_SPACE)) {
 		isUp = 1;
+		if (upSpeed <= 0.50) {
+			upSpeed += 0.01f;
+		}
+	}
+	else {
+		isUp = 0;
+		
+
+		if (upSpeed > 0.4) {
+			downSpeed = 0.10f;
+		}
+		if (downSpeed > 0.00) {
+			downSpeed -= 0.01f;
+		}
+		else {
+			downSpeed = 0;
+		}
+		upSpeed = 0;
 	}
 
+
 	if (isUp == 0) {
-		worldTransform_.translation_.y -= gravity;
+		worldTransform_.translation_.y += gravity+downSpeed;
 	}
 	else if (isUp == 1) {
-		worldTransform_.translation_.y += gravity;
+		worldTransform_.translation_.y += upSpeed;
 	}
 
 	////ゲームパッドの状態を得る変数（XINPUT）
@@ -89,8 +108,8 @@ void Player::Update(ViewProjection viewProjection) {
 
 	//移動限界座標
 
-	const float kMoveLimitX = 13.0f;
-	const float kMoveLimitY = 7.0f;
+	const float kMoveLimitX = 32.0f;
+	const float kMoveLimitY = 19.0f;
 
 	//範囲を超えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
@@ -257,6 +276,11 @@ void Player::Update(ViewProjection viewProjection) {
 			"MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
 			worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
 
+		DebugText::GetInstance()->SetPos(20, 20);
+		DebugText::GetInstance()->Printf("downSpeed:(%f)",downSpeed);
+
+		DebugText::GetInstance()->SetPos(20, 40);
+		DebugText::GetInstance()->Printf("upSpeed:(%f)", upSpeed);
 	}
 }
 void Player::Draw(ViewProjection viewProjection_) {

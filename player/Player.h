@@ -42,9 +42,13 @@ private:
 
 	int isHit_ = false;
 
-	const float gravity = 0.2f;
+	const float gravity = -0.3f;
 
 	int isUp = 0;
+
+	float upSpeed = 0.0f;
+	
+	float downSpeed = 0.0f;
 
 public:
 
